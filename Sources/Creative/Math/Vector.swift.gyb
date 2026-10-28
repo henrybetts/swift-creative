@@ -1,0 +1,156 @@
+%{
+dimensions = [2, 3, 4]
+all_components = ['x', 'y', 'z', 'w']
+}%
+// Generated from Vector.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+% for n in dimensions:
+%   type = 'Vector%dD' % n
+%   simd = 'SIMD%d<Float>' % n
+%   components = all_components[:n]
+
+/// A ${n}D vector with `Float` components.
+public struct ${type}: SIMDRepresentable {
+    /// The underlying SIMD value.
+    public var rawValue: ${simd}
+
+    /// Creates a vector from a SIMD value.
+    public init(rawValue: ${simd}) {
+        self.rawValue = rawValue
+    }
+
+    /// Creates a vector with the given components.
+    public init(${', '.join('_ %s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+
+    /// Creates a vector with the given components.
+    public init(${', '.join('%s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+%   for c in components:
+
+    /// The ${c} component.
+    public var ${c}: Float {
+        get { rawValue.${c} }
+        set { rawValue.${c} = newValue }
+    }
+%   end
+}
+
+extension ${type} {
+    /// A vector with all components set to one.
+    public static let one = ${type}(rawValue: .one)
+
+    /// The squared length of the vector. Cheaper than `length` when only comparing lengths.
+    public var lengthSquared: Float {
+        dot(self)
+    }
+
+    /// The length (magnitude) of the vector.
+    public var length: Float {
+        lengthSquared.squareRoot()
+    }
+
+    /// The vector scaled to a length of one, or `.zero` if the vector has zero length.
+    public var normalized: ${type} {
+        let length = length
+        return length > 0 ? self / length : .zero
+    }
+
+    /// Scales the vector to a length of one, or sets it to `.zero` if it has zero length.
+    public mutating func normalize() {
+        self = normalized
+    }
+
+    /// The dot product of this vector and `other`.
+    public func dot(_ other: ${type}) -> Float {
+        (rawValue * other.rawValue).sum()
+    }
+%   if n == 3:
+
+    /// The cross product of this vector and `other`.
+    public func cross(_ other: ${type}) -> ${type} {
+        ${type}(
+            y * other.z - z * other.y,
+            z * other.x - x * other.z,
+            x * other.y - y * other.x
+        )
+    }
+%   end
+}
+
+extension ${type}: AdditiveArithmetic {
+    /// A vector with all components set to zero.
+    public static let zero = ${type}(rawValue: .zero)
+
+    public static func + (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    public static func - (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    public static func += (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    public static func -= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension ${type} {
+    /// Negates each component.
+    public static prefix func - (vector: ${type}) -> ${type} {
+        ${type}(rawValue: -vector.rawValue)
+    }
+
+    /// Multiplies each component by a scalar.
+    public static func * (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(rawValue: lhs.rawValue * rhs)
+    }
+
+    /// Multiplies each component by a scalar.
+    public static func * (lhs: Float, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs * rhs.rawValue)
+    }
+
+    /// Divides each component by a scalar.
+    public static func / (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(rawValue: lhs.rawValue / rhs)
+    }
+
+    /// Multiplies corresponding components.
+    public static func * (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue * rhs.rawValue)
+    }
+
+    /// Divides corresponding components.
+    public static func / (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue / rhs.rawValue)
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: Float) {
+        lhs.rawValue *= rhs
+    }
+
+    public static func /= (lhs: inout ${type}, rhs: Float) {
+        lhs.rawValue /= rhs
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue *= rhs.rawValue
+    }
+
+    public static func /= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue /= rhs.rawValue
+    }
+}
+
+extension ${type}: CustomStringConvertible {
+    public var description: String {
+        "${type}(${', '.join('%s: \\(%s)' % (c, c) for c in components)})"
+    }
+}
+% end

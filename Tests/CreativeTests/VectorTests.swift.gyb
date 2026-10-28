@@ -1,0 +1,132 @@
+%{
+dimensions = [2, 3, 4]
+all_components = ['x', 'y', 'z', 'w']
+
+# Vectors with whole-number lengths, keyed by dimension.
+whole_length_vectors = {2: ([3, 4], 5), 3: ([2, 3, 6], 7), 4: ([1, 2, 2, 4], 5)}
+
+def args(values):
+    return ', '.join(str(v) for v in values)
+}%
+// Generated from VectorTests.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+import Foundation
+import Testing
+@testable import Creative
+
+private func isApproximatelyEqual<V: SIMDRepresentable>(_ a: V, _ b: V, tolerance: Float = 1e-6) -> Bool
+where V.RawValue.Scalar == Float {
+    let difference = a.rawValue - b.rawValue
+    return (difference * difference).sum() <= tolerance * tolerance
+}
+% for n in dimensions:
+%   type = 'Vector%dD' % n
+%   components = all_components[:n]
+%   a = [1, 2, 3, 4][:n]
+%   b = [5, 6, 7, 8][:n]
+%   whole, whole_length = whole_length_vectors[n]
+
+@Suite struct ${type}Tests {
+    let a = ${type}(${args(a)})
+    let b = ${type}(${args(b)})
+
+    @Test func components() {
+%   for c, value in zip(components, a):
+        #expect(a.${c} == ${value})
+%   end
+        #expect(a.rawValue == SIMD${n}(${args(a)}))
+        #expect(a == ${type}(${', '.join('%s: %s' % (c, v) for c, v in zip(components, a))}))
+    }
+
+    @Test func settingComponents() {
+        var vector = ${type}.zero
+%   for c, value in zip(components, a):
+        vector.${c} = ${value}
+%   end
+        #expect(vector == a)
+    }
+
+    @Test func constants() {
+        #expect(${type}.zero == ${type}(${args([0] * n)}))
+        #expect(${type}.one == ${type}(${args([1] * n)}))
+    }
+
+    @Test func addition() {
+        #expect(a + b == ${type}(${args([x + y for x, y in zip(a, b)])}))
+    }
+
+    @Test func subtraction() {
+        #expect(b - a == ${type}(${args([y - x for x, y in zip(a, b)])}))
+    }
+
+    @Test func negation() {
+        #expect(-a == ${type}(${args([-x for x in a])}))
+    }
+
+    @Test func scalarMultiplicationAndDivision() {
+        #expect(a * 2 == ${type}(${args([x * 2 for x in a])}))
+        #expect(2 * a == a * 2)
+        #expect(a / 2 == ${type}(${args([x / 2 for x in a])}))
+    }
+
+    @Test func componentWiseMultiplicationAndDivision() {
+        let product = ${type}(${args([x * y for x, y in zip(a, b)])})
+        #expect(a * b == product)
+        #expect(product / a == b)
+    }
+
+    @Test func compoundAssignment() {
+        var vector = a
+        vector += b
+        vector -= a
+        #expect(vector == b)
+        vector *= 2
+        vector /= 2
+        #expect(vector == b)
+        vector *= a
+        vector /= a
+        #expect(vector == b)
+    }
+
+    @Test func dot() {
+        #expect(a.dot(b) == ${sum(x * y for x, y in zip(a, b))})
+    }
+
+    @Test func length() {
+        let vector = ${type}(${args(whole)})
+        #expect(vector.length == ${whole_length})
+        #expect(vector.lengthSquared == ${whole_length ** 2})
+    }
+
+    @Test func normalized() {
+        let vector = ${type}(${args(whole)})
+        #expect(isApproximatelyEqual(vector.normalized, ${type}(${args([x / whole_length for x in whole])})))
+        #expect(${type}.zero.normalized == .zero)
+    }
+
+    @Test func normalize() {
+        var vector = ${type}(${args(whole)})
+        vector.normalize()
+        #expect(vector == ${type}(${args(whole)}).normalized)
+    }
+%   if n == 3:
+
+    @Test func cross() {
+        let x = ${type}(1, 0, 0)
+        let y = ${type}(0, 1, 0)
+        #expect(x.cross(y) == ${type}(0, 0, 1))
+        #expect(y.cross(x) == ${type}(0, 0, -1))
+        #expect(a.cross(a) == .zero)
+    }
+%   end
+
+    @Test func description() {
+        #expect(a.description == "${type}(${', '.join('%s: %s' % (c, float(v)) for c, v in zip(components, a))})")
+    }
+
+    @Test func codable() throws {
+        let data = try JSONEncoder().encode(a)
+        #expect(String(decoding: data, as: UTF8.self) == "[${','.join(str(v) for v in a)}]")
+        #expect(try JSONDecoder().decode(${type}.self, from: data) == a)
+    }
+}
+% end
