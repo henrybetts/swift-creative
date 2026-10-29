@@ -1,0 +1,105 @@
+%{
+dimensions = [2, 3]
+all_components = ['width', 'height', 'depth']
+
+def args(values):
+    return ', '.join(str(v) for v in values)
+}%
+// Generated from SizeTests.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+import Foundation
+import Testing
+@testable import Creative
+% for n in dimensions:
+%   type = 'Size%dD' % n
+%   vector = 'Vector%dD' % n
+%   components = all_components[:n]
+%   a = [1, 2, 3][:n]
+%   b = [5, 6, 7][:n]
+
+@Suite struct ${type}Tests {
+    let a = ${type}(${args(a)})
+    let b = ${type}(${args(b)})
+    let v = ${vector}(${args(b)})
+
+    @Test func components() {
+%   for c, value in zip(components, a):
+        #expect(a.${c} == ${value})
+%   end
+        #expect(a.rawValue == SIMD${n}(${args(a)}))
+        #expect(a == ${type}(${', '.join('%s: %s' % (c, v) for c, v in zip(components, a))}))
+    }
+
+    @Test func settingComponents() {
+        var size = ${type}.zero
+%   for c, value in zip(components, a):
+        size.${c} = ${value}
+%   end
+        #expect(size == a)
+    }
+
+    @Test func constants() {
+        #expect(${type}.zero == ${type}(${args([0] * n)}))
+        #expect(${type}.one == ${type}(${args([1] * n)}))
+    }
+
+    @Test func addition() {
+        #expect(a + b == ${type}(${args([x + y for x, y in zip(a, b)])}))
+    }
+
+    @Test func subtraction() {
+        #expect(b - a == ${type}(${args([y - x for x, y in zip(a, b)])}))
+    }
+
+    @Test func scalarMultiplicationAndDivision() {
+        #expect(a * 2 == ${type}(${args([x * 2 for x in a])}))
+        #expect(2 * a == a * 2)
+        #expect(a / 2 == ${type}(${args([x / 2 for x in a])}))
+    }
+
+    @Test func componentWiseMultiplicationAndDivision() {
+        let product = ${type}(${args([x * y for x, y in zip(a, b)])})
+        #expect(a * b == product)
+        #expect(product / a == b)
+    }
+
+    @Test func vectorAdditionAndSubtraction() {
+        #expect(a + v == ${type}(${args([x + y for x, y in zip(a, b)])}))
+        #expect(a - v == ${type}(${args([x - y for x, y in zip(a, b)])}))
+    }
+
+    @Test func compoundAssignment() {
+        var size = a
+        size += b
+        size -= a
+        #expect(size == b)
+        size *= 2
+        size /= 2
+        #expect(size == b)
+        size *= a
+        size /= a
+        #expect(size == b)
+        size += v
+        size -= v
+        #expect(size == b)
+    }
+
+    @Test func vectorConversion() {
+        #expect(${vector}(a) == ${vector}(${args(a)}))
+        #expect(${type}(v) == b)
+    }
+
+    @Test func pointConversion() {
+        #expect(${type}(Point${n}D(${args(a)})) == a)
+    }
+
+    @Test func description() {
+        #expect(a.description == "${type}(${', '.join('%s: %s' % (c, float(v)) for c, v in zip(components, a))})")
+    }
+
+    @Test func codable() throws {
+        let data = try JSONEncoder().encode(a)
+        #expect(String(decoding: data, as: UTF8.self) == "[${','.join(str(v) for v in a)}]")
+        #expect(try JSONDecoder().decode(${type}.self, from: data) == a)
+    }
+}
+% end

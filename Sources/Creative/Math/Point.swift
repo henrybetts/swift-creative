@@ -25,6 +25,11 @@ public struct Point2D: SIMDRepresentable {
         self.init(rawValue: vector.rawValue)
     }
 
+    /// Creates a point with the components of `size`.
+    public init(_ size: Size2D) {
+        self.init(rawValue: size.rawValue)
+    }
+
     /// The x component.
     public var x: Float {
         get { rawValue.x }
@@ -80,6 +85,48 @@ extension Point2D {
     }
 }
 
+extension Point2D {
+    /// Offsets a point by a size, e.g. to find the opposite corner of a rectangle.
+    public static func + (lhs: Point2D, rhs: Size2D) -> Point2D {
+        Point2D(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func - (lhs: Point2D, rhs: Size2D) -> Point2D {
+        Point2D(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Multiplies each component by the corresponding component of a size, e.g. to map normalized coordinates into a size.
+    public static func * (lhs: Point2D, rhs: Size2D) -> Point2D {
+        Point2D(rawValue: lhs.rawValue * rhs.rawValue)
+    }
+
+    /// Divides each component by the corresponding component of a size, e.g. to normalize coordinates within a size.
+    public static func / (lhs: Point2D, rhs: Size2D) -> Point2D {
+        Point2D(rawValue: lhs.rawValue / rhs.rawValue)
+    }
+
+    /// Offsets a point by a size.
+    public static func += (lhs: inout Point2D, rhs: Size2D) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func -= (lhs: inout Point2D, rhs: Size2D) {
+        lhs.rawValue -= rhs.rawValue
+    }
+
+    /// Multiplies each component by the corresponding component of a size.
+    public static func *= (lhs: inout Point2D, rhs: Size2D) {
+        lhs.rawValue *= rhs.rawValue
+    }
+
+    /// Divides each component by the corresponding component of a size.
+    public static func /= (lhs: inout Point2D, rhs: Size2D) {
+        lhs.rawValue /= rhs.rawValue
+    }
+}
+
 extension Point2D: CustomStringConvertible {
     public var description: String {
         "Point2D(x: \(x), y: \(y))"
@@ -116,6 +163,11 @@ public struct Point3D: SIMDRepresentable {
     /// Creates a point at the position `vector` points to from the origin.
     public init(_ vector: Vector3D) {
         self.init(rawValue: vector.rawValue)
+    }
+
+    /// Creates a point with the components of `size`.
+    public init(_ size: Size3D) {
+        self.init(rawValue: size.rawValue)
     }
 
     /// The x component.
@@ -176,6 +228,48 @@ extension Point3D {
     /// Offsets a point by the negation of a vector.
     public static func -= (lhs: inout Point3D, rhs: Vector3D) {
         lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension Point3D {
+    /// Offsets a point by a size, e.g. to find the opposite corner of a rectangle.
+    public static func + (lhs: Point3D, rhs: Size3D) -> Point3D {
+        Point3D(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func - (lhs: Point3D, rhs: Size3D) -> Point3D {
+        Point3D(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Multiplies each component by the corresponding component of a size, e.g. to map normalized coordinates into a size.
+    public static func * (lhs: Point3D, rhs: Size3D) -> Point3D {
+        Point3D(rawValue: lhs.rawValue * rhs.rawValue)
+    }
+
+    /// Divides each component by the corresponding component of a size, e.g. to normalize coordinates within a size.
+    public static func / (lhs: Point3D, rhs: Size3D) -> Point3D {
+        Point3D(rawValue: lhs.rawValue / rhs.rawValue)
+    }
+
+    /// Offsets a point by a size.
+    public static func += (lhs: inout Point3D, rhs: Size3D) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func -= (lhs: inout Point3D, rhs: Size3D) {
+        lhs.rawValue -= rhs.rawValue
+    }
+
+    /// Multiplies each component by the corresponding component of a size.
+    public static func *= (lhs: inout Point3D, rhs: Size3D) {
+        lhs.rawValue *= rhs.rawValue
+    }
+
+    /// Divides each component by the corresponding component of a size.
+    public static func /= (lhs: inout Point3D, rhs: Size3D) {
+        lhs.rawValue /= rhs.rawValue
     }
 }
 

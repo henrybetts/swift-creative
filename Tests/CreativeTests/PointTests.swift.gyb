@@ -15,6 +15,7 @@ import Testing
 % for n in dimensions:
 %   type = 'Point%dD' % n
 %   vector = 'Vector%dD' % n
+%   size = 'Size%dD' % n
 %   components = all_components[:n]
 %   a = [1, 2, 3][:n]
 %   b = [5, 6, 7][:n]
@@ -24,6 +25,7 @@ import Testing
     let a = ${type}(${args(a)})
     let b = ${type}(${args(b)})
     let v = ${vector}(${args(b)})
+    let s = ${size}(${args(b)})
 
     @Test func components() {
 %   for c, value in zip(components, a):
@@ -62,6 +64,27 @@ import Testing
         #expect(point == a)
     }
 
+    @Test func sizeAdditionAndSubtraction() {
+        #expect(a + s == ${type}(${args([x + y for x, y in zip(a, b)])}))
+        #expect(a - s == ${type}(${args([x - y for x, y in zip(a, b)])}))
+    }
+
+    @Test func sizeMultiplicationAndDivision() {
+        let product = ${type}(${args([x * y for x, y in zip(a, b)])})
+        #expect(a * s == product)
+        #expect(product / s == a)
+    }
+
+    @Test func sizeCompoundAssignment() {
+        var point = a
+        point += s
+        point -= s
+        #expect(point == a)
+        point *= s
+        point /= s
+        #expect(point == a)
+    }
+
     @Test func distance() {
         let other = a + ${vector}(${args(whole)})
         #expect(a.distance(to: other) == ${whole_length})
@@ -71,6 +94,10 @@ import Testing
     @Test func vectorConversion() {
         #expect(${vector}(a) == ${vector}(${args(a)}))
         #expect(${type}(v) == b)
+    }
+
+    @Test func sizeConversion() {
+        #expect(${type}(s) == b)
     }
 
     @Test func description() {

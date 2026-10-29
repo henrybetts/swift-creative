@@ -7,6 +7,7 @@ import Testing
     let a = Point2D(1, 2)
     let b = Point2D(5, 6)
     let v = Vector2D(5, 6)
+    let s = Size2D(5, 6)
 
     @Test func components() {
         #expect(a.x == 1)
@@ -43,6 +44,27 @@ import Testing
         #expect(point == a)
     }
 
+    @Test func sizeAdditionAndSubtraction() {
+        #expect(a + s == Point2D(6, 8))
+        #expect(a - s == Point2D(-4, -4))
+    }
+
+    @Test func sizeMultiplicationAndDivision() {
+        let product = Point2D(5, 12)
+        #expect(a * s == product)
+        #expect(product / s == a)
+    }
+
+    @Test func sizeCompoundAssignment() {
+        var point = a
+        point += s
+        point -= s
+        #expect(point == a)
+        point *= s
+        point /= s
+        #expect(point == a)
+    }
+
     @Test func distance() {
         let other = a + Vector2D(3, 4)
         #expect(a.distance(to: other) == 5)
@@ -52,6 +74,10 @@ import Testing
     @Test func vectorConversion() {
         #expect(Vector2D(a) == Vector2D(1, 2))
         #expect(Point2D(v) == b)
+    }
+
+    @Test func sizeConversion() {
+        #expect(Point2D(s) == b)
     }
 
     @Test func description() {
@@ -69,6 +95,7 @@ import Testing
     let a = Point3D(1, 2, 3)
     let b = Point3D(5, 6, 7)
     let v = Vector3D(5, 6, 7)
+    let s = Size3D(5, 6, 7)
 
     @Test func components() {
         #expect(a.x == 1)
@@ -107,6 +134,27 @@ import Testing
         #expect(point == a)
     }
 
+    @Test func sizeAdditionAndSubtraction() {
+        #expect(a + s == Point3D(6, 8, 10))
+        #expect(a - s == Point3D(-4, -4, -4))
+    }
+
+    @Test func sizeMultiplicationAndDivision() {
+        let product = Point3D(5, 12, 21)
+        #expect(a * s == product)
+        #expect(product / s == a)
+    }
+
+    @Test func sizeCompoundAssignment() {
+        var point = a
+        point += s
+        point -= s
+        #expect(point == a)
+        point *= s
+        point /= s
+        #expect(point == a)
+    }
+
     @Test func distance() {
         let other = a + Vector3D(2, 3, 6)
         #expect(a.distance(to: other) == 7)
@@ -116,6 +164,10 @@ import Testing
     @Test func vectorConversion() {
         #expect(Vector3D(a) == Vector3D(1, 2, 3))
         #expect(Point3D(v) == b)
+    }
+
+    @Test func sizeConversion() {
+        #expect(Point3D(s) == b)
     }
 
     @Test func description() {

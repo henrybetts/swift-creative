@@ -1,0 +1,156 @@
+%{
+dimensions = [2, 3]
+all_components = ['width', 'height', 'depth']
+simd_components = ['x', 'y', 'z']
+}%
+// Generated from Size.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+% for n in dimensions:
+%   type = 'Size%dD' % n
+%   vector = 'Vector%dD' % n
+%   point = 'Point%dD' % n
+%   simd = 'SIMD%d<Float>' % n
+%   components = all_components[:n]
+
+/// An extent in ${n}D space.
+public struct ${type}: SIMDRepresentable {
+    /// The underlying SIMD value.
+    public var rawValue: ${simd}
+
+    /// Creates a size from a SIMD value.
+    public init(rawValue: ${simd}) {
+        self.rawValue = rawValue
+    }
+
+    /// Creates a size with the given components.
+    public init(${', '.join('_ %s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+
+    /// Creates a size with the given components.
+    public init(${', '.join('%s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+
+    /// Creates a size with the components of `vector`.
+    public init(_ vector: ${vector}) {
+        self.init(rawValue: vector.rawValue)
+    }
+
+    /// Creates a size with the components of `point`.
+    public init(_ point: ${point}) {
+        self.init(rawValue: point.rawValue)
+    }
+%   for c, s in zip(components, simd_components):
+
+    /// The ${c} component.
+    public var ${c}: Float {
+        get { rawValue.${s} }
+        set { rawValue.${s} = newValue }
+    }
+%   end
+}
+
+extension ${type} {
+    /// A size with all components set to one.
+    public static let one = ${type}(rawValue: .one)
+}
+
+extension ${type}: AdditiveArithmetic {
+    /// A size with all components set to zero.
+    public static let zero = ${type}(rawValue: .zero)
+
+    public static func + (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    public static func - (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    public static func += (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    public static func -= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension ${type} {
+    /// Multiplies each component by a scalar.
+    public static func * (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(rawValue: lhs.rawValue * rhs)
+    }
+
+    /// Multiplies each component by a scalar.
+    public static func * (lhs: Float, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs * rhs.rawValue)
+    }
+
+    /// Divides each component by a scalar.
+    public static func / (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(rawValue: lhs.rawValue / rhs)
+    }
+
+    /// Multiplies corresponding components.
+    public static func * (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue * rhs.rawValue)
+    }
+
+    /// Divides corresponding components.
+    public static func / (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue / rhs.rawValue)
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: Float) {
+        lhs.rawValue *= rhs
+    }
+
+    public static func /= (lhs: inout ${type}, rhs: Float) {
+        lhs.rawValue /= rhs
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue *= rhs.rawValue
+    }
+
+    public static func /= (lhs: inout ${type}, rhs: ${type}) {
+        lhs.rawValue /= rhs.rawValue
+    }
+}
+
+extension ${type} {
+    /// Grows a size by the components of a vector.
+    public static func + (lhs: ${type}, rhs: ${vector}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    /// Shrinks a size by the components of a vector.
+    public static func - (lhs: ${type}, rhs: ${vector}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Grows a size by the components of a vector.
+    public static func += (lhs: inout ${type}, rhs: ${vector}) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    /// Shrinks a size by the components of a vector.
+    public static func -= (lhs: inout ${type}, rhs: ${vector}) {
+        lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension ${type}: CustomStringConvertible {
+    public var description: String {
+        "${type}(${', '.join('%s: \\(%s)' % (c, c) for c in components)})"
+    }
+}
+
+extension ${vector} {
+    /// Creates a vector with the components of `size`.
+    public init(_ size: ${type}) {
+        self.init(rawValue: size.rawValue)
+    }
+}
+% end

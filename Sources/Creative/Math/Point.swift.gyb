@@ -6,6 +6,7 @@ all_components = ['x', 'y', 'z']
 % for n in dimensions:
 %   type = 'Point%dD' % n
 %   vector = 'Vector%dD' % n
+%   size = 'Size%dD' % n
 %   simd = 'SIMD%d<Float>' % n
 %   components = all_components[:n]
 
@@ -32,6 +33,11 @@ public struct ${type}: SIMDRepresentable {
     /// Creates a point at the position `vector` points to from the origin.
     public init(_ vector: ${vector}) {
         self.init(rawValue: vector.rawValue)
+    }
+
+    /// Creates a point with the components of `size`.
+    public init(_ size: ${size}) {
+        self.init(rawValue: size.rawValue)
     }
 %   for c in components:
 
@@ -82,6 +88,48 @@ extension ${type} {
     /// Offsets a point by the negation of a vector.
     public static func -= (lhs: inout ${type}, rhs: ${vector}) {
         lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension ${type} {
+    /// Offsets a point by a size, e.g. to find the opposite corner of a rectangle.
+    public static func + (lhs: ${type}, rhs: ${size}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func - (lhs: ${type}, rhs: ${size}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Multiplies each component by the corresponding component of a size, e.g. to map normalized coordinates into a size.
+    public static func * (lhs: ${type}, rhs: ${size}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue * rhs.rawValue)
+    }
+
+    /// Divides each component by the corresponding component of a size, e.g. to normalize coordinates within a size.
+    public static func / (lhs: ${type}, rhs: ${size}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue / rhs.rawValue)
+    }
+
+    /// Offsets a point by a size.
+    public static func += (lhs: inout ${type}, rhs: ${size}) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    /// Offsets a point by the negation of a size.
+    public static func -= (lhs: inout ${type}, rhs: ${size}) {
+        lhs.rawValue -= rhs.rawValue
+    }
+
+    /// Multiplies each component by the corresponding component of a size.
+    public static func *= (lhs: inout ${type}, rhs: ${size}) {
+        lhs.rawValue *= rhs.rawValue
+    }
+
+    /// Divides each component by the corresponding component of a size.
+    public static func /= (lhs: inout ${type}, rhs: ${size}) {
+        lhs.rawValue /= rhs.rawValue
     }
 }
 
