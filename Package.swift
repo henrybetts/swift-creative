@@ -11,15 +11,19 @@ let package = Package(
             name: "Creative",
             targets: ["Creative"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.0.0"),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "Creative",
+            dependencies: [.product(name: "RealModule", package: "swift-numerics")],
             exclude: ["Math/Vector.swift.gyb", "Math/Point.swift.gyb", "Math/Size.swift.gyb"]),
         .testTarget(
             name: "CreativeTests",
-            dependencies: ["Creative"],
+            dependencies: ["Creative", .product(name: "RealModule", package: "swift-numerics")],
             exclude: ["VectorTests.swift.gyb", "PointTests.swift.gyb", "SizeTests.swift.gyb"]
         ),
     ]
