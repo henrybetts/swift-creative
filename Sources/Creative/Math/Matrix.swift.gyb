@@ -1,0 +1,243 @@
+%{
+dimensions = [2, 3, 4]
+all_components = ['x', 'y', 'z', 'w']
+}%
+// Generated from Matrix.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+% for n in dimensions:
+%   type = 'Matrix%dx%d' % (n, n)
+%   vector = 'Vector%dD' % n
+%   components = all_components[:n]
+%   indices = range(n)
+%   columns_type = '(%s)' % ', '.join([vector] * n)
+
+%{
+def each_column(format):
+    return ', '.join(format.replace('#', str(i)) for i in indices)
+}%
+/// A ${n}x${n} matrix, stored in column-major order.
+public struct ${type}: Sendable {
+    /// The columns of the matrix.
+    public var columns: ${columns_type}
+
+    /// Creates a matrix with the given columns.
+    public init(columns: ${columns_type}) {
+        self.columns = columns
+    }
+
+    /// Creates a matrix with the given columns.
+    public init(${each_column('_ column#: %s' % vector)}) {
+        self.init(columns: (${each_column('column#')}))
+    }
+
+    /// Creates a matrix with the given rows.
+    public init(rows: ${columns_type}) {
+        self = ${type}(columns: rows).transpose
+    }
+
+    /// Creates a matrix with the given values on the diagonal and zero elsewhere.
+    public init(diagonal: ${vector}) {
+%   for i in indices:
+        let column${i} = ${vector}(${', '.join('diagonal.%s' % c if j == i else '0' for j, c in enumerate(components))})
+%   end
+        self.init(${each_column('column#')})
+    }
+
+    /// The column at the given index.
+    public subscript(column: Int) -> ${vector} {
+        get {
+            switch column {
+%   for i in indices:
+            case ${i}: columns.${i}
+%   end
+            default: preconditionFailure("Column index out of range")
+            }
+        }
+        set {
+            switch column {
+%   for i in indices:
+            case ${i}: columns.${i} = newValue
+%   end
+            default: preconditionFailure("Column index out of range")
+            }
+        }
+    }
+
+    /// The element at the given column and row.
+    public subscript(column: Int, row: Int) -> Float {
+        get { self[column].rawValue[row] }
+        set { self[column].rawValue[row] = newValue }
+    }
+}
+
+extension ${type} {
+    /// The identity matrix.
+    public static let identity = ${type}(diagonal: .one)
+
+    /// The matrix with its rows and columns swapped.
+    public var transpose: ${type} {
+        ${type}(
+%   for i, c in enumerate(components):
+            ${vector}(${each_column('columns.#.%s' % c)})${',' if i < n - 1 else ''}
+%   end
+        )
+    }
+
+    /// The determinant of the matrix.
+    public var determinant: Float {
+%   if n == 2:
+        columns.0.x * columns.1.y - columns.1.x * columns.0.y
+%   elif n == 3:
+        columns.0.dot(columns.1.cross(columns.2))
+%   else:
+        // Based on Eric Lengyel's formulation in Foundations of Game Engine Development, Volume 1.
+        let (a, b, c, d) = (columns.0.xyz, columns.1.xyz, columns.2.xyz, columns.3.xyz)
+        let (x, y, z, w) = (columns.0.w, columns.1.w, columns.2.w, columns.3.w)
+        let s = a.cross(b)
+        let t = c.cross(d)
+        let u = a * y - b * x
+        let v = c * w - d * z
+        return s.dot(v) + t.dot(u)
+%   end
+    }
+
+    /// The inverse of the matrix.
+    ///
+    /// The result contains non-finite values if the matrix is singular (its determinant is zero).
+    public var inverse: ${type} {
+%   if n == 2:
+        let inverseDeterminant = 1 / determinant
+        return ${type}(
+            ${vector}(columns.1.y, -columns.0.y) * inverseDeterminant,
+            ${vector}(-columns.1.x, columns.0.x) * inverseDeterminant
+        )
+%   elif n == 3:
+        // Based on Eric Lengyel's formulation in Foundations of Game Engine Development, Volume 1.
+        let (a, b, c) = columns
+        let row0 = b.cross(c)
+        let row1 = c.cross(a)
+        let row2 = a.cross(b)
+        let inverseDeterminant = 1 / row2.dot(c)
+        return ${type}(rows: (row0, row1, row2)) * inverseDeterminant
+%   else:
+        // Based on Eric Lengyel's formulation in Foundations of Game Engine Development, Volume 1.
+        let (a, b, c, d) = (columns.0.xyz, columns.1.xyz, columns.2.xyz, columns.3.xyz)
+        let (x, y, z, w) = (columns.0.w, columns.1.w, columns.2.w, columns.3.w)
+        let s = a.cross(b)
+        let t = c.cross(d)
+        let u = a * y - b * x
+        let v = c * w - d * z
+        let inverseDeterminant = 1 / (s.dot(v) + t.dot(u))
+        let row0 = Vector4D(b.cross(v) + t * y, -b.dot(t))
+        let row1 = Vector4D(v.cross(a) - t * x, a.dot(t))
+        let row2 = Vector4D(d.cross(u) + s * w, -d.dot(s))
+        let row3 = Vector4D(u.cross(c) - s * z, c.dot(s))
+        return ${type}(rows: (row0, row1, row2, row3)) * inverseDeterminant
+%   end
+    }
+}
+
+extension ${type} {
+    /// The product of two matrices, which applies `rhs` first, then `lhs`.
+    public static func * (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(${each_column('lhs * rhs.columns.#')})
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: ${type}) {
+        lhs = lhs * rhs
+    }
+
+    /// Transforms a column vector by the matrix.
+    public static func * (lhs: ${type}, rhs: ${vector}) -> ${vector} {
+        ${' + '.join('lhs.columns.%d * rhs.%s' % (i, c) for i, c in enumerate(components))}
+    }
+
+    /// Multiplies a row vector by the matrix. Equivalent to `rhs.transpose * lhs`.
+    public static func * (lhs: ${vector}, rhs: ${type}) -> ${vector} {
+        ${vector}(${each_column('lhs.dot(rhs.columns.#)')})
+    }
+}
+
+extension ${type}: AdditiveArithmetic {
+    /// A matrix with all elements set to zero.
+    public static let zero = ${type}(diagonal: .zero)
+
+    public static func + (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(${each_column('lhs.columns.# + rhs.columns.#')})
+    }
+
+    public static func - (lhs: ${type}, rhs: ${type}) -> ${type} {
+        ${type}(${each_column('lhs.columns.# - rhs.columns.#')})
+    }
+
+    public static func += (lhs: inout ${type}, rhs: ${type}) {
+        lhs = lhs + rhs
+    }
+
+    public static func -= (lhs: inout ${type}, rhs: ${type}) {
+        lhs = lhs - rhs
+    }
+}
+
+extension ${type} {
+    /// Negates each element.
+    public static prefix func - (matrix: ${type}) -> ${type} {
+        ${type}(${each_column('-matrix.columns.#')})
+    }
+
+    /// Multiplies each element by a scalar.
+    public static func * (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(${each_column('lhs.columns.# * rhs')})
+    }
+
+    /// Multiplies each element by a scalar.
+    public static func * (lhs: Float, rhs: ${type}) -> ${type} {
+        rhs * lhs
+    }
+
+    /// Divides each element by a scalar.
+    public static func / (lhs: ${type}, rhs: Float) -> ${type} {
+        ${type}(${each_column('lhs.columns.# / rhs')})
+    }
+
+    public static func *= (lhs: inout ${type}, rhs: Float) {
+        lhs = lhs * rhs
+    }
+
+    public static func /= (lhs: inout ${type}, rhs: Float) {
+        lhs = lhs / rhs
+    }
+}
+
+extension ${type}: Hashable {
+    public static func == (lhs: ${type}, rhs: ${type}) -> Bool {
+        ${' && '.join('lhs.columns.%d == rhs.columns.%d' % (i, i) for i in indices)}
+    }
+
+    public func hash(into hasher: inout Hasher) {
+%   for i in indices:
+        hasher.combine(columns.${i})
+%   end
+    }
+}
+
+/// Encoded as an array of columns, e.g. `[[1, 0], [0, 1]]`.
+extension ${type}: Codable {
+    public init(from decoder: any Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        self.init(${each_column('try container.decode(%s.self)' % vector)})
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.unkeyedContainer()
+%   for i in indices:
+        try container.encode(columns.${i})
+%   end
+    }
+}
+
+extension ${type}: CustomStringConvertible {
+    public var description: String {
+        "${type}(columns: (${each_column('\\(columns.#)')}))"
+    }
+}
+% end

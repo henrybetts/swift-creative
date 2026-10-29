@@ -159,6 +159,11 @@ public struct Vector3D: SIMDRepresentable {
         self.init(rawValue: SIMD3<Float>(x, y, z))
     }
 
+    /// Creates a vector from a 2D vector and a z component.
+    public init(_ xy: Vector2D, _ z: Float) {
+        self.init(rawValue: SIMD3<Float>(xy.rawValue, z))
+    }
+
     /// The x component.
     public var x: Float {
         get { rawValue.x }
@@ -181,6 +186,11 @@ public struct Vector3D: SIMDRepresentable {
 extension Vector3D {
     /// A vector with all components set to one.
     public static let one = Vector3D(rawValue: .one)
+
+    /// The x and y components.
+    public var xy: Vector2D {
+        Vector2D(x, y)
+    }
 
     /// The squared length of the vector. Cheaper than `length` when only comparing lengths.
     public var lengthSquared: Float {
@@ -313,6 +323,11 @@ public struct Vector4D: SIMDRepresentable {
         self.init(rawValue: SIMD4<Float>(x, y, z, w))
     }
 
+    /// Creates a vector from a 3D vector and a w component.
+    public init(_ xyz: Vector3D, _ w: Float) {
+        self.init(rawValue: SIMD4<Float>(xyz.rawValue, w))
+    }
+
     /// The x component.
     public var x: Float {
         get { rawValue.x }
@@ -341,6 +356,11 @@ public struct Vector4D: SIMDRepresentable {
 extension Vector4D {
     /// A vector with all components set to one.
     public static let one = Vector4D(rawValue: .one)
+
+    /// The x, y and z components.
+    public var xyz: Vector3D {
+        Vector3D(x, y, z)
+    }
 
     /// The squared length of the vector. Cheaper than `length` when only comparing lengths.
     public var lengthSquared: Float {

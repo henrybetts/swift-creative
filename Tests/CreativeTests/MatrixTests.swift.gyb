@@ -1,0 +1,157 @@
+%{
+dimensions = [2, 3, 4]
+all_components = ['x', 'y', 'z', 'w']
+
+# Fixtures as rows. `a` has a determinant of 1, so its inverse has whole-number elements.
+fixtures = {
+    2: dict(
+        a=[[3, 2], [1, 1]],
+        a_inverse=[[1, -2], [-1, 3]],
+        b=[[1, 2], [3, 4]],
+    ),
+    3: dict(
+        a=[[1, 2, 3], [0, 1, 4], [5, 6, 0]],
+        a_inverse=[[-24, 18, 5], [20, -15, -4], [-5, 4, 1]],
+        b=[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+    ),
+    4: dict(
+        a=[[1, 2, 0, 1], [0, 1, 3, 0], [2, 4, 1, 2], [1, 0, 0, 2]],
+        a_inverse=[[-22, -4, 12, -1], [6, 1, -3, 0], [-2, 0, 1, 0], [11, 2, -6, 1]],
+        b=[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]],
+    ),
+}
+
+def args(values):
+    return ', '.join(str(v) for v in values)
+
+def transpose(m):
+    return [list(column) for column in zip(*m)]
+
+def multiply(a, b):
+    return [[sum(x * y for x, y in zip(row, column)) for column in transpose(b)] for row in a]
+
+def map_elements(m, f):
+    return [[f(x) for x in row] for row in m]
+
+def zip_elements(a, b, f):
+    return [[f(x, y) for x, y in zip(row_a, row_b)] for row_a, row_b in zip(a, b)]
+}%
+// Generated from MatrixTests.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+import Foundation
+import Testing
+@testable import Creative
+% for n in dimensions:
+%   type = 'Matrix%dx%d' % (n, n)
+%   vector = 'Vector%dD' % n
+%   components = all_components[:n]
+%   f = fixtures[n]
+%   a, b = f['a'], f['b']
+%   v = list(range(1, n + 1))
+%{
+def vec(values):
+    return '%s(%s)' % (vector, args(values))
+
+def matrix(rows):
+    return '%s(rows: (%s))' % (type, ', '.join(vec(row) for row in rows))
+}%
+
+@Suite struct ${type}Tests {
+    let a = ${matrix(a)}
+    let b = ${matrix(b)}
+
+    @Test func rowsAndColumns() {
+        #expect(a == ${type}(${', '.join(vec(column) for column in transpose(a))}))
+        #expect(a == ${type}(columns: (${', '.join(vec(column) for column in transpose(a))})))
+    }
+
+    @Test func subscripts() {
+        #expect(a[1] == ${vec(transpose(a)[1])})
+        #expect(a[1, 0] == ${a[0][1]})
+        var matrix = ${type}.zero
+        matrix[1] = ${vec(v)}
+        matrix[0, 1] = 5
+        #expect(matrix[1] == ${vec(v)})
+        #expect(matrix[0] == ${vec([0, 5] + [0] * (n - 2))})
+    }
+
+    @Test func constants() {
+        #expect(${type}.zero == ${matrix([[0] * n] * n)})
+        #expect(${type}.identity == ${matrix([[1 if i == j else 0 for j in range(n)] for i in range(n)])})
+        #expect(${type}(diagonal: ${vec(v)}) == ${matrix([[v[i] if i == j else 0 for j in range(n)] for i in range(n)])})
+    }
+
+    @Test func transpose() {
+        #expect(a.transpose == ${matrix(transpose(a))})
+    }
+
+    @Test func determinant() {
+        #expect(a.determinant == 1)
+        #expect(a.transpose.determinant == 1)
+        #expect(${type}(diagonal: ${vec(v)}).determinant == ${eval('*'.join(str(x) for x in v))})
+        #expect(b.determinant == ${0 if n > 2 else -2})
+    }
+
+    @Test func inverse() {
+        #expect(a.inverse == ${matrix(f['a_inverse'])})
+        #expect(a * a.inverse == .identity)
+        #expect(a.inverse * a == .identity)
+    }
+
+    @Test func singularInverse() {
+        #expect(!${type}.zero.inverse[0, 0].isFinite)
+    }
+
+    @Test func matrixMultiplication() {
+        #expect(a * b == ${matrix(multiply(a, b))})
+        #expect(b * a == ${matrix(multiply(b, a))})
+        #expect(a * .identity == a)
+    }
+
+    @Test func vectorMultiplication() {
+        let vector = ${vec(v)}
+        #expect(a * vector == ${vec([row[0] for row in multiply(a, transpose([v]))])})
+        #expect(vector * a == ${vec(multiply([v], a)[0])})
+        #expect(vector * a == a.transpose * vector)
+    }
+
+    @Test func addition() {
+        #expect(a + b == ${matrix(zip_elements(a, b, lambda x, y: x + y))})
+    }
+
+    @Test func subtraction() {
+        #expect(b - a == ${matrix(zip_elements(b, a, lambda x, y: x - y))})
+    }
+
+    @Test func negation() {
+        #expect(-a == ${matrix(map_elements(a, lambda x: -x))})
+    }
+
+    @Test func scalarMultiplicationAndDivision() {
+        #expect(a * 2 == ${matrix(map_elements(a, lambda x: x * 2))})
+        #expect(2 * a == a * 2)
+        #expect(a / 2 == ${matrix(map_elements(a, lambda x: x / 2))})
+    }
+
+    @Test func compoundAssignment() {
+        var matrix = a
+        matrix += b
+        matrix -= a
+        #expect(matrix == b)
+        matrix *= 2
+        matrix /= 2
+        #expect(matrix == b)
+        matrix *= a
+        #expect(matrix == b * a)
+    }
+
+    @Test func description() {
+        #expect(a.description == "${type}(columns: (${', '.join('%s(%s)' % (vector, ', '.join('%s: %s' % (c, float(x)) for c, x in zip(components, column))) for column in transpose(a))}))")
+    }
+
+    @Test func codable() throws {
+        let data = try JSONEncoder().encode(a)
+        #expect(String(decoding: data, as: UTF8.self) == "[${','.join('[%s]' % ','.join(str(x) for x in column) for column in transpose(a))}]")
+        #expect(try JSONDecoder().decode(${type}.self, from: data) == a)
+    }
+}
+% end

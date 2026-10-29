@@ -122,6 +122,12 @@ where V.RawValue.Scalar == Float {
         #expect(vector == a)
     }
 
+    @Test func lowerDimension() {
+        let lower = Vector2D(1, 2)
+        #expect(a.xy == lower)
+        #expect(Vector3D(lower, 3) == a)
+    }
+
     @Test func constants() {
         #expect(Vector3D.zero == Vector3D(0, 0, 0))
         #expect(Vector3D.one == Vector3D(1, 1, 1))
@@ -225,6 +231,12 @@ where V.RawValue.Scalar == Float {
         vector.z = 3
         vector.w = 4
         #expect(vector == a)
+    }
+
+    @Test func lowerDimension() {
+        let lower = Vector3D(1, 2, 3)
+        #expect(a.xyz == lower)
+        #expect(Vector4D(lower, 4) == a)
     }
 
     @Test func constants() {

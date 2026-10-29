@@ -45,6 +45,14 @@ where V.RawValue.Scalar == Float {
         #expect(vector == a)
     }
 
+%   if n > 2:
+    @Test func lowerDimension() {
+        let lower = Vector${n - 1}D(${args(a[:-1])})
+        #expect(a.${''.join(components[:-1])} == lower)
+        #expect(${type}(lower, ${a[-1]}) == a)
+    }
+
+%   end
     @Test func constants() {
         #expect(${type}.zero == ${type}(${args([0] * n)}))
         #expect(${type}.one == ${type}(${args([1] * n)}))

@@ -7,6 +7,8 @@ all_components = ['x', 'y', 'z', 'w']
 %   type = 'Vector%dD' % n
 %   simd = 'SIMD%d<Float>' % n
 %   components = all_components[:n]
+%   lower_type = 'Vector%dD' % (n - 1)
+%   lower_name = ''.join(components[:-1])
 
 /// A ${n}D vector.
 public struct ${type}: SIMDRepresentable {
@@ -27,6 +29,13 @@ public struct ${type}: SIMDRepresentable {
     public init(${', '.join('%s: Float' % c for c in components)}) {
         self.init(rawValue: ${simd}(${', '.join(components)}))
     }
+%   if n > 2:
+
+    /// Creates a vector from a ${n - 1}D vector and a ${components[-1]} component.
+    public init(_ ${lower_name}: ${lower_type}, _ ${components[-1]}: Float) {
+        self.init(rawValue: ${simd}(${lower_name}.rawValue, ${components[-1]}))
+    }
+%   end
 %   for c in components:
 
     /// The ${c} component.
@@ -41,6 +50,13 @@ extension ${type} {
     /// A vector with all components set to one.
     public static let one = ${type}(rawValue: .one)
 
+%   if n > 2:
+    /// The ${', '.join(components[:-2])} and ${components[-2]} components.
+    public var ${lower_name}: ${lower_type} {
+        ${lower_type}(${', '.join(components[:-1])})
+    }
+
+%   end
     /// The squared length of the vector. Cheaper than `length` when only comparing lengths.
     public var lengthSquared: Float {
         dot(self)
