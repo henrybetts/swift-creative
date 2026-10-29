@@ -1,0 +1,8 @@
+- Use clean Swift style and established patterns. If in doubt, consult the official Swift API Design Guidelines: https://www.swift.org/documentation/api-design-guidelines/
+- Types and methods should have documentation comments. Keep documentation concise unless a detailed explanation adds real value. The target audience is likely already familiar with vectors and matrices, for example.
+- Keep unit tests clean and simple to follow. Only add complexity where it adds real value.
+- Many core types will use Float rather than Double for now, because the WebGPU rendering is mostly based around 32 bit floats.
+- Use gyb only to reduce significant duplication, such as math types with varying dimensions.
+  - Edit the `.swift.gyb` template, never the generated `.swift` file, then run `Scripts/gyb` from the repo root to regenerate.
+  - Add new `.gyb` files to the target's `exclude` list in `Package.swift`.
+- Build with `swift build` and test with `swift test`.

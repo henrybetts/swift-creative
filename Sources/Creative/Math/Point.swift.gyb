@@ -1,0 +1,100 @@
+%{
+dimensions = [2, 3]
+all_components = ['x', 'y', 'z']
+}%
+// Generated from Point.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+% for n in dimensions:
+%   type = 'Point%dD' % n
+%   vector = 'Vector%dD' % n
+%   simd = 'SIMD%d<Float>' % n
+%   components = all_components[:n]
+
+/// A position in ${n}D space.
+public struct ${type}: SIMDRepresentable {
+    /// The underlying SIMD value.
+    public var rawValue: ${simd}
+
+    /// Creates a point from a SIMD value.
+    public init(rawValue: ${simd}) {
+        self.rawValue = rawValue
+    }
+
+    /// Creates a point with the given components.
+    public init(${', '.join('_ %s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+
+    /// Creates a point with the given components.
+    public init(${', '.join('%s: Float' % c for c in components)}) {
+        self.init(rawValue: ${simd}(${', '.join(components)}))
+    }
+
+    /// Creates a point at the position `vector` points to from the origin.
+    public init(_ vector: ${vector}) {
+        self.init(rawValue: vector.rawValue)
+    }
+%   for c in components:
+
+    /// The ${c} component.
+    public var ${c}: Float {
+        get { rawValue.${c} }
+        set { rawValue.${c} = newValue }
+    }
+%   end
+}
+
+extension ${type} {
+    /// The point with all components set to zero.
+    public static let origin = ${type}(rawValue: .zero)
+
+    /// The squared distance from this point to `other`. Cheaper than `distance(to:)` when only comparing distances.
+    public func distanceSquared(to other: ${type}) -> Float {
+        (other - self).lengthSquared
+    }
+
+    /// The distance from this point to `other`.
+    public func distance(to other: ${type}) -> Float {
+        (other - self).length
+    }
+}
+
+extension ${type} {
+    /// The vector from `rhs` to `lhs`.
+    public static func - (lhs: ${type}, rhs: ${type}) -> ${vector} {
+        ${vector}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Offsets a point by a vector.
+    public static func + (lhs: ${type}, rhs: ${vector}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue + rhs.rawValue)
+    }
+
+    /// Offsets a point by the negation of a vector.
+    public static func - (lhs: ${type}, rhs: ${vector}) -> ${type} {
+        ${type}(rawValue: lhs.rawValue - rhs.rawValue)
+    }
+
+    /// Offsets a point by a vector.
+    public static func += (lhs: inout ${type}, rhs: ${vector}) {
+        lhs.rawValue += rhs.rawValue
+    }
+
+    /// Offsets a point by the negation of a vector.
+    public static func -= (lhs: inout ${type}, rhs: ${vector}) {
+        lhs.rawValue -= rhs.rawValue
+    }
+}
+
+extension ${type}: CustomStringConvertible {
+    public var description: String {
+        "${type}(${', '.join('%s: \\(%s)' % (c, c) for c in components)})"
+    }
+}
+
+extension ${vector} {
+    /// Creates a vector from the origin to `point`.
+    public init(_ point: ${type}) {
+        self.init(rawValue: point.rawValue)
+    }
+}
+% end

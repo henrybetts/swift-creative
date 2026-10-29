@@ -8,7 +8,7 @@ all_components = ['x', 'y', 'z', 'w']
 %   simd = 'SIMD%d<Float>' % n
 %   components = all_components[:n]
 
-/// A ${n}D vector with `Float` components.
+/// A ${n}D vector.
 public struct ${type}: SIMDRepresentable {
     /// The underlying SIMD value.
     public var rawValue: ${simd}

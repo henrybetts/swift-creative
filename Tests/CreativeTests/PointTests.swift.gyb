@@ -1,0 +1,86 @@
+%{
+dimensions = [2, 3]
+all_components = ['x', 'y', 'z']
+
+# Offsets with whole-number lengths, keyed by dimension.
+whole_length_offsets = {2: ([3, 4], 5), 3: ([2, 3, 6], 7)}
+
+def args(values):
+    return ', '.join(str(v) for v in values)
+}%
+// Generated from PointTests.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
+import Foundation
+import Testing
+@testable import Creative
+% for n in dimensions:
+%   type = 'Point%dD' % n
+%   vector = 'Vector%dD' % n
+%   components = all_components[:n]
+%   a = [1, 2, 3][:n]
+%   b = [5, 6, 7][:n]
+%   whole, whole_length = whole_length_offsets[n]
+
+@Suite struct ${type}Tests {
+    let a = ${type}(${args(a)})
+    let b = ${type}(${args(b)})
+    let v = ${vector}(${args(b)})
+
+    @Test func components() {
+%   for c, value in zip(components, a):
+        #expect(a.${c} == ${value})
+%   end
+        #expect(a.rawValue == SIMD${n}(${args(a)}))
+        #expect(a == ${type}(${', '.join('%s: %s' % (c, v) for c, v in zip(components, a))}))
+    }
+
+    @Test func settingComponents() {
+        var point = ${type}.origin
+%   for c, value in zip(components, a):
+        point.${c} = ${value}
+%   end
+        #expect(point == a)
+    }
+
+    @Test func origin() {
+        #expect(${type}.origin == ${type}(${args([0] * n)}))
+    }
+
+    @Test func pointSubtraction() {
+        #expect(b - a == ${vector}(${args([y - x for x, y in zip(a, b)])}))
+    }
+
+    @Test func vectorAdditionAndSubtraction() {
+        #expect(a + v == ${type}(${args([x + y for x, y in zip(a, b)])}))
+        #expect(a - v == ${type}(${args([x - y for x, y in zip(a, b)])}))
+    }
+
+    @Test func compoundAssignment() {
+        var point = a
+        point += v
+        #expect(point == a + v)
+        point -= v
+        #expect(point == a)
+    }
+
+    @Test func distance() {
+        let other = a + ${vector}(${args(whole)})
+        #expect(a.distance(to: other) == ${whole_length})
+        #expect(a.distanceSquared(to: other) == ${whole_length ** 2})
+    }
+
+    @Test func vectorConversion() {
+        #expect(${vector}(a) == ${vector}(${args(a)}))
+        #expect(${type}(v) == b)
+    }
+
+    @Test func description() {
+        #expect(a.description == "${type}(${', '.join('%s: %s' % (c, float(v)) for c, v in zip(components, a))})")
+    }
+
+    @Test func codable() throws {
+        let data = try JSONEncoder().encode(a)
+        #expect(String(decoding: data, as: UTF8.self) == "[${','.join(str(v) for v in a)}]")
+        #expect(try JSONDecoder().decode(${type}.self, from: data) == a)
+    }
+}
+% end

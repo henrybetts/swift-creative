@@ -16,11 +16,11 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "Creative",
-            exclude: ["Math/Vector.swift.gyb"]),
+            exclude: ["Math/Vector.swift.gyb", "Math/Point.swift.gyb"]),
         .testTarget(
             name: "CreativeTests",
             dependencies: ["Creative"],
-            exclude: ["VectorTests.swift.gyb"]
+            exclude: ["VectorTests.swift.gyb", "PointTests.swift.gyb"]
         ),
     ]
 )

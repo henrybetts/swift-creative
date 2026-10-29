@@ -1,6 +1,6 @@
 // Generated from Vector.swift.gyb - do not edit directly. Run Scripts/gyb to regenerate.
 
-/// A 2D vector with `Float` components.
+/// A 2D vector.
 public struct Vector2D: SIMDRepresentable {
     /// The underlying SIMD value.
     public var rawValue: SIMD2<Float>
@@ -139,7 +139,7 @@ extension Vector2D: CustomStringConvertible {
     }
 }
 
-/// A 3D vector with `Float` components.
+/// A 3D vector.
 public struct Vector3D: SIMDRepresentable {
     /// The underlying SIMD value.
     public var rawValue: SIMD3<Float>
@@ -293,7 +293,7 @@ extension Vector3D: CustomStringConvertible {
     }
 }
 
-/// A 4D vector with `Float` components.
+/// A 4D vector.
 public struct Vector4D: SIMDRepresentable {
     /// The underlying SIMD value.
     public var rawValue: SIMD4<Float>
