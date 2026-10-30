@@ -93,7 +93,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Matrix2x2(columns: (Vector2D(x: 3.0, y: 1.0), Vector2D(x: 2.0, y: 1.0)))")
+        #expect(a.description == "[3, 2; 1, 1]")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Matrix2x2(columns: (Vector2D(x: 3.0, y: 1.0), Vector2D(x: 2.0, y: 1.0)))")
     }
 
     @Test func codable() throws {
@@ -193,7 +197,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Matrix3x3(columns: (Vector3D(x: 1.0, y: 0.0, z: 5.0), Vector3D(x: 2.0, y: 1.0, z: 6.0), Vector3D(x: 3.0, y: 4.0, z: 0.0)))")
+        #expect(a.description == "[1, 2, 3; 0, 1, 4; 5, 6, 0]")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Matrix3x3(columns: (Vector3D(x: 1.0, y: 0.0, z: 5.0), Vector3D(x: 2.0, y: 1.0, z: 6.0), Vector3D(x: 3.0, y: 4.0, z: 0.0)))")
     }
 
     @Test func codable() throws {
@@ -293,7 +301,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Matrix4x4(columns: (Vector4D(x: 1.0, y: 0.0, z: 2.0, w: 1.0), Vector4D(x: 2.0, y: 1.0, z: 4.0, w: 0.0), Vector4D(x: 0.0, y: 3.0, z: 1.0, w: 0.0), Vector4D(x: 1.0, y: 0.0, z: 2.0, w: 2.0)))")
+        #expect(a.description == "[1, 2, 0, 1; 0, 1, 3, 0; 2, 4, 1, 2; 1, 0, 0, 2]")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Matrix4x4(columns: (Vector4D(x: 1.0, y: 0.0, z: 2.0, w: 1.0), Vector4D(x: 2.0, y: 1.0, z: 4.0, w: 0.0), Vector4D(x: 0.0, y: 3.0, z: 1.0, w: 0.0), Vector4D(x: 1.0, y: 0.0, z: 2.0, w: 2.0)))")
     }
 
     @Test func codable() throws {

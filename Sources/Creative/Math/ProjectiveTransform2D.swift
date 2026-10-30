@@ -95,8 +95,14 @@ extension ProjectiveTransform2D: Codable {
     }
 }
 
-extension ProjectiveTransform2D: CustomStringConvertible {
+extension ProjectiveTransform2D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description of the matrix, e.g. `[1, 0, 2; 0, 1, 3; 0, 0, 1]`.
     public var description: String {
-        "ProjectiveTransform2D(\(rawValue))"
+        rawValue.description
+    }
+
+    /// A description that constructs the same transform as Swift code.
+    public var debugDescription: String {
+        "ProjectiveTransform2D(\(rawValue.debugDescription))"
     }
 }

@@ -61,6 +61,10 @@ import Testing
     }
 
     @Test func description() {
-        #expect(ProjectiveTransform2D.identity.description == "ProjectiveTransform2D(\(Matrix3x3.identity))")
+        #expect(translation.description == "[1, 0, 2; 0, 1, 3; 0, 0, 1]")
+    }
+
+    @Test func debugDescription() {
+        #expect(translation.debugDescription == "ProjectiveTransform2D(Matrix3x3(columns: (Vector3D(x: 1.0, y: 0.0, z: 0.0), Vector3D(x: 0.0, y: 1.0, z: 0.0), Vector3D(x: 2.0, y: 3.0, z: 1.0))))")
     }
 }

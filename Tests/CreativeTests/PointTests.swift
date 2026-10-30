@@ -81,7 +81,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Point2D(x: 1.0, y: 2.0)")
+        #expect(a.description == "(1, 2)")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Point2D(x: 1.0, y: 2.0)")
     }
 
     @Test func codable() throws {
@@ -171,7 +175,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Point3D(x: 1.0, y: 2.0, z: 3.0)")
+        #expect(a.description == "(1, 2, 3)")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Point3D(x: 1.0, y: 2.0, z: 3.0)")
     }
 
     @Test func codable() throws {

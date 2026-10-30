@@ -3,6 +3,8 @@
 - Keep unit tests clean and simple to follow. Only add complexity where it adds real value.
 - Many core types will use Float rather than Double for now, because the WebGPU rendering is mostly based around 32 bit floats.
 - Base non-trivial math implementations on Eric Lengyel's *Foundations of Game Engine Development* where possible, so readers have a single source of truth to learn more from. Only cite a source when a reader would struggle to find a reference for the same implementation.
+- Write non-square matrix sizes as columns x rows to match WebGPU's column-major notation, e.g. a 2D affine transform is a 3x2 matrix.
+- For simple value types, `description` is user-presentable without the type name (e.g. `90°`), and `debugDescription` is Swift code that constructs the same value (e.g. `Angle(radians: 1.5707963)`).
 - Use gyb only to reduce significant duplication, such as math types with varying dimensions.
   - Edit the `.swift.gyb` template, never the generated `.swift` file, then run `Scripts/gyb` from the repo root to regenerate.
   - Add new `.gyb` files to the target's `exclude` list in `Package.swift`.

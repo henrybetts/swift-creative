@@ -89,7 +89,14 @@ import Testing
     }
 
     @Test func description() {
-        #expect(Angle.degrees(90).description == "Angle(degrees: 90.0)")
+        #expect(Angle.degrees(90).description == "90°")
+        #expect(Angle.halfTurn.description == "180°")
+        #expect(Angle.degrees(-22.5).description == "-22.5°")
+    }
+
+    @Test func debugDescription() {
+        #expect(Angle.quarterTurn.debugDescription == "Angle(radians: 1.5707963)")
+        #expect(Angle(radians: 1.5707963) == .quarterTurn)
     }
 
     @Test func codable() throws {

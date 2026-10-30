@@ -1,6 +1,6 @@
 import RealModule
 
-/// A 2D angle that is accessible in either radians or degrees.
+/// An angle, accessible in radians or degrees.
 ///
 /// The angle is stored and encoded in radians.
 /// Angles are not wrapped, so `.degrees(720)` is distinct from `.zero`.
@@ -129,8 +129,14 @@ extension Angle: Comparable {
     }
 }
 
-extension Angle: CustomStringConvertible {
+extension Angle: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description in degrees, e.g. `90°`.
     public var description: String {
-        "Angle(degrees: \(degrees))"
+        "\(degrees.displayDescription)°"
+    }
+
+    /// A description that constructs the same angle as Swift code, e.g. `Angle(radians: 1.5707963)`.
+    public var debugDescription: String {
+        "Angle(radians: \(radians))"
     }
 }

@@ -80,12 +80,10 @@ extension ${type} {
         ${type}(rawValue: lhs.rawValue - rhs.rawValue)
     }
 
-    /// Offsets a point by a vector.
     public static func += (lhs: inout ${type}, rhs: ${vector}) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a vector.
     public static func -= (lhs: inout ${type}, rhs: ${vector}) {
         lhs.rawValue -= rhs.rawValue
     }
@@ -112,29 +110,31 @@ extension ${type} {
         ${type}(rawValue: lhs.rawValue / rhs.rawValue)
     }
 
-    /// Offsets a point by a size.
     public static func += (lhs: inout ${type}, rhs: ${size}) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a size.
     public static func -= (lhs: inout ${type}, rhs: ${size}) {
         lhs.rawValue -= rhs.rawValue
     }
 
-    /// Multiplies each component by the corresponding component of a size.
     public static func *= (lhs: inout ${type}, rhs: ${size}) {
         lhs.rawValue *= rhs.rawValue
     }
 
-    /// Divides each component by the corresponding component of a size.
     public static func /= (lhs: inout ${type}, rhs: ${size}) {
         lhs.rawValue /= rhs.rawValue
     }
 }
 
-extension ${type}: CustomStringConvertible {
+extension ${type}: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(${', '.join(str(i + 1) for i in range(n))})`.
     public var description: String {
+        "(${', '.join('\\(%s.displayDescription)' % c for c in components)})"
+    }
+
+    /// A description that constructs the same point as Swift code, e.g. `${type}(${', '.join('%s: %s.0' % (c, i + 1) for i, c in enumerate(components))})`.
+    public var debugDescription: String {
         "${type}(${', '.join('%s: \\(%s)' % (c, c) for c in components)})"
     }
 }

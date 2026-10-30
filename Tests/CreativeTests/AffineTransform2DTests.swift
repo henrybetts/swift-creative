@@ -79,14 +79,16 @@ import Testing
     }
 
     @Test func codable() throws {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .sortedKeys
-        let data = try encoder.encode(translation)
-        #expect(String(decoding: data, as: UTF8.self) == #"{"linearTransform":[[1,0],[0,1]],"translation":[2,3]}"#)
-        #expect(try JSONDecoder().decode(AffineTransform2D.self, from: data) == translation)
+        let data = try JSONEncoder().encode(shearAndTranslation)
+        #expect(String(decoding: data, as: UTF8.self) == "[[1,0],[1,1],[2,3]]")
+        #expect(try JSONDecoder().decode(AffineTransform2D.self, from: data) == shearAndTranslation)
     }
 
     @Test func description() {
-        #expect(AffineTransform2D.identity.description == "AffineTransform2D(linearTransform: \(Matrix2x2.identity), translation: \(Vector2D.zero))")
+        #expect(shearAndTranslation.description == "[1, 1, 2; 0, 1, 3]")
+    }
+
+    @Test func debugDescription() {
+        #expect(translation.debugDescription == "AffineTransform2D(linearTransform: Matrix2x2(columns: (Vector2D(x: 1.0, y: 0.0), Vector2D(x: 0.0, y: 1.0))), translation: Vector2D(x: 2.0, y: 3.0))")
     }
 }

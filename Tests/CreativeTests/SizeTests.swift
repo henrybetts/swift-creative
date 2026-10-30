@@ -78,7 +78,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Size2D(width: 1.0, height: 2.0)")
+        #expect(a.description == "1 × 2")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Size2D(width: 1.0, height: 2.0)")
     }
 
     @Test func codable() throws {
@@ -165,7 +169,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Size3D(width: 1.0, height: 2.0, depth: 3.0)")
+        #expect(a.description == "1 × 2 × 3")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Size3D(width: 1.0, height: 2.0, depth: 3.0)")
     }
 
     @Test func codable() throws {

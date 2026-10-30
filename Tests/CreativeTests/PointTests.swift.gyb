@@ -101,7 +101,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "${type}(${', '.join('%s: %s' % (c, float(v)) for c, v in zip(components, a))})")
+        #expect(a.description == "(${args(a)})")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "${type}(${', '.join('%s: %s' % (c, float(v)) for c, v in zip(components, a))})")
     }
 
     @Test func codable() throws {

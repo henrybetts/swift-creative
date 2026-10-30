@@ -134,8 +134,14 @@ extension Size2D {
     }
 }
 
-extension Size2D: CustomStringConvertible {
+extension Size2D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `1 × 2`.
     public var description: String {
+        "\(width.displayDescription) × \(height.displayDescription)"
+    }
+
+    /// A description that constructs the same size as Swift code, e.g. `Size2D(width: 1.0, height: 2.0)`.
+    public var debugDescription: String {
         "Size2D(width: \(width), height: \(height))"
     }
 }
@@ -287,8 +293,14 @@ extension Size3D {
     }
 }
 
-extension Size3D: CustomStringConvertible {
+extension Size3D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `1 × 2 × 3`.
     public var description: String {
+        "\(width.displayDescription) × \(height.displayDescription) × \(depth.displayDescription)"
+    }
+
+    /// A description that constructs the same size as Swift code, e.g. `Size3D(width: 1.0, height: 2.0, depth: 3.0)`.
+    public var debugDescription: String {
         "Size3D(width: \(width), height: \(height), depth: \(depth))"
     }
 }

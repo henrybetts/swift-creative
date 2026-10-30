@@ -88,11 +88,33 @@ extension AffineTransform2D {
     }
 }
 
-/// Encoded with keys, e.g. `{"linearTransform": [[1, 0], [0, 1]], "translation": [0, 0]}`.
-extension AffineTransform2D: Codable {}
+/// Encoded as the columns of a 3x2 matrix, e.g. `[[1, 0], [0, 1], [2, 3]]`.
+extension AffineTransform2D: Codable {
+    public init(from decoder: any Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        let linearTransform = Matrix2x2(try container.decode(Vector2D.self), try container.decode(Vector2D.self))
+        self.init(linearTransform: linearTransform, translation: try container.decode(Vector2D.self))
+    }
 
-extension AffineTransform2D: CustomStringConvertible {
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        try container.encode(linearTransform.columns.0)
+        try container.encode(linearTransform.columns.1)
+        try container.encode(translation)
+    }
+}
+
+extension AffineTransform2D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description of the 3x2 matrix in row-major order, e.g. `[1, 0, 2; 0, 1, 3]`.
     public var description: String {
-        "AffineTransform2D(linearTransform: \(linearTransform), translation: \(translation))"
+        let (column0, column1) = linearTransform.columns
+        let row0 = [column0.x, column1.x, translation.x].map(\.displayDescription).joined(separator: ", ")
+        let row1 = [column0.y, column1.y, translation.y].map(\.displayDescription).joined(separator: ", ")
+        return "[\(row0); \(row1)]"
+    }
+
+    /// A description that constructs the same transform as Swift code.
+    public var debugDescription: String {
+        "AffineTransform2D(linearTransform: \(linearTransform.debugDescription), translation: \(translation.debugDescription))"
     }
 }

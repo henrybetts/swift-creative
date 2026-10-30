@@ -74,12 +74,10 @@ extension Point2D {
         Point2D(rawValue: lhs.rawValue - rhs.rawValue)
     }
 
-    /// Offsets a point by a vector.
     public static func += (lhs: inout Point2D, rhs: Vector2D) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a vector.
     public static func -= (lhs: inout Point2D, rhs: Vector2D) {
         lhs.rawValue -= rhs.rawValue
     }
@@ -106,29 +104,31 @@ extension Point2D {
         Point2D(rawValue: lhs.rawValue / rhs.rawValue)
     }
 
-    /// Offsets a point by a size.
     public static func += (lhs: inout Point2D, rhs: Size2D) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a size.
     public static func -= (lhs: inout Point2D, rhs: Size2D) {
         lhs.rawValue -= rhs.rawValue
     }
 
-    /// Multiplies each component by the corresponding component of a size.
     public static func *= (lhs: inout Point2D, rhs: Size2D) {
         lhs.rawValue *= rhs.rawValue
     }
 
-    /// Divides each component by the corresponding component of a size.
     public static func /= (lhs: inout Point2D, rhs: Size2D) {
         lhs.rawValue /= rhs.rawValue
     }
 }
 
-extension Point2D: CustomStringConvertible {
+extension Point2D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(1, 2)`.
     public var description: String {
+        "(\(x.displayDescription), \(y.displayDescription))"
+    }
+
+    /// A description that constructs the same point as Swift code, e.g. `Point2D(x: 1.0, y: 2.0)`.
+    public var debugDescription: String {
         "Point2D(x: \(x), y: \(y))"
     }
 }
@@ -220,12 +220,10 @@ extension Point3D {
         Point3D(rawValue: lhs.rawValue - rhs.rawValue)
     }
 
-    /// Offsets a point by a vector.
     public static func += (lhs: inout Point3D, rhs: Vector3D) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a vector.
     public static func -= (lhs: inout Point3D, rhs: Vector3D) {
         lhs.rawValue -= rhs.rawValue
     }
@@ -252,29 +250,31 @@ extension Point3D {
         Point3D(rawValue: lhs.rawValue / rhs.rawValue)
     }
 
-    /// Offsets a point by a size.
     public static func += (lhs: inout Point3D, rhs: Size3D) {
         lhs.rawValue += rhs.rawValue
     }
 
-    /// Offsets a point by the negation of a size.
     public static func -= (lhs: inout Point3D, rhs: Size3D) {
         lhs.rawValue -= rhs.rawValue
     }
 
-    /// Multiplies each component by the corresponding component of a size.
     public static func *= (lhs: inout Point3D, rhs: Size3D) {
         lhs.rawValue *= rhs.rawValue
     }
 
-    /// Divides each component by the corresponding component of a size.
     public static func /= (lhs: inout Point3D, rhs: Size3D) {
         lhs.rawValue /= rhs.rawValue
     }
 }
 
-extension Point3D: CustomStringConvertible {
+extension Point3D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(1, 2, 3)`.
     public var description: String {
+        "(\(x.displayDescription), \(y.displayDescription), \(z.displayDescription))"
+    }
+
+    /// A description that constructs the same point as Swift code, e.g. `Point3D(x: 1.0, y: 2.0, z: 3.0)`.
+    public var debugDescription: String {
         "Point3D(x: \(x), y: \(y), z: \(z))"
     }
 }

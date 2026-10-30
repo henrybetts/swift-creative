@@ -87,7 +87,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Vector2D(x: 1.0, y: 2.0)")
+        #expect(a.description == "(1, 2)")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Vector2D(x: 1.0, y: 2.0)")
     }
 
     @Test func codable() throws {
@@ -196,7 +200,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Vector3D(x: 1.0, y: 2.0, z: 3.0)")
+        #expect(a.description == "(1, 2, 3)")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Vector3D(x: 1.0, y: 2.0, z: 3.0)")
     }
 
     @Test func codable() throws {
@@ -299,7 +307,11 @@ import Testing
     }
 
     @Test func description() {
-        #expect(a.description == "Vector4D(x: 1.0, y: 2.0, z: 3.0, w: 4.0)")
+        #expect(a.description == "(1, 2, 3, 4)")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "Vector4D(x: 1.0, y: 2.0, z: 3.0, w: 4.0)")
     }
 
     @Test func codable() throws {

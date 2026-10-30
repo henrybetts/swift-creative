@@ -235,9 +235,15 @@ extension ${type}: Codable {
     }
 }
 
-extension ${type}: CustomStringConvertible {
+extension ${type}: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description in row-major order, e.g. `[${'; '.join(', '.join('1' if i == j else '0' for j in indices) for i in indices)}]`.
     public var description: String {
-        "${type}(columns: (${each_column('\\(columns.#)')}))"
+        "[${'; '.join(', '.join('\\(columns.%d.%s.displayDescription)' % (i, c) for i in indices) for c in components)}]"
+    }
+
+    /// A description that constructs the same matrix as Swift code.
+    public var debugDescription: String {
+        "${type}(columns: (${each_column('\\(columns.#.debugDescription)')}))"
     }
 }
 % end

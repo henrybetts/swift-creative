@@ -145,7 +145,11 @@ def matrix(rows):
     }
 
     @Test func description() {
-        #expect(a.description == "${type}(columns: (${', '.join('%s(%s)' % (vector, ', '.join('%s: %s' % (c, float(x)) for c, x in zip(components, column))) for column in transpose(a))}))")
+        #expect(a.description == "[${'; '.join(args(row) for row in a)}]")
+    }
+
+    @Test func debugDescription() {
+        #expect(a.debugDescription == "${type}(columns: (${', '.join('%s(%s)' % (vector, ', '.join('%s: %s' % (c, float(x)) for c, x in zip(components, column))) for column in transpose(a))}))")
     }
 
     @Test func codable() throws {

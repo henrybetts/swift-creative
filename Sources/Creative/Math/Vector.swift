@@ -133,8 +133,14 @@ extension Vector2D {
     }
 }
 
-extension Vector2D: CustomStringConvertible {
+extension Vector2D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(1, 2)`.
     public var description: String {
+        "(\(x.displayDescription), \(y.displayDescription))"
+    }
+
+    /// A description that constructs the same vector as Swift code, e.g. `Vector2D(x: 1.0, y: 2.0)`.
+    public var debugDescription: String {
         "Vector2D(x: \(x), y: \(y))"
     }
 }
@@ -297,8 +303,14 @@ extension Vector3D {
     }
 }
 
-extension Vector3D: CustomStringConvertible {
+extension Vector3D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(1, 2, 3)`.
     public var description: String {
+        "(\(x.displayDescription), \(y.displayDescription), \(z.displayDescription))"
+    }
+
+    /// A description that constructs the same vector as Swift code, e.g. `Vector3D(x: 1.0, y: 2.0, z: 3.0)`.
+    public var debugDescription: String {
         "Vector3D(x: \(x), y: \(y), z: \(z))"
     }
 }
@@ -458,8 +470,14 @@ extension Vector4D {
     }
 }
 
-extension Vector4D: CustomStringConvertible {
+extension Vector4D: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description, e.g. `(1, 2, 3, 4)`.
     public var description: String {
+        "(\(x.displayDescription), \(y.displayDescription), \(z.displayDescription), \(w.displayDescription))"
+    }
+
+    /// A description that constructs the same vector as Swift code, e.g. `Vector4D(x: 1.0, y: 2.0, z: 3.0, w: 4.0)`.
+    public var debugDescription: String {
         "Vector4D(x: \(x), y: \(y), z: \(z), w: \(w))"
     }
 }

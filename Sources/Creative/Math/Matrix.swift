@@ -178,9 +178,15 @@ extension Matrix2x2: Codable {
     }
 }
 
-extension Matrix2x2: CustomStringConvertible {
+extension Matrix2x2: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description in row-major order, e.g. `[1, 0; 0, 1]`.
     public var description: String {
-        "Matrix2x2(columns: (\(columns.0), \(columns.1)))"
+        "[\(columns.0.x.displayDescription), \(columns.1.x.displayDescription); \(columns.0.y.displayDescription), \(columns.1.y.displayDescription)]"
+    }
+
+    /// A description that constructs the same matrix as Swift code.
+    public var debugDescription: String {
+        "Matrix2x2(columns: (\(columns.0.debugDescription), \(columns.1.debugDescription)))"
     }
 }
 
@@ -370,9 +376,15 @@ extension Matrix3x3: Codable {
     }
 }
 
-extension Matrix3x3: CustomStringConvertible {
+extension Matrix3x3: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description in row-major order, e.g. `[1, 0, 0; 0, 1, 0; 0, 0, 1]`.
     public var description: String {
-        "Matrix3x3(columns: (\(columns.0), \(columns.1), \(columns.2)))"
+        "[\(columns.0.x.displayDescription), \(columns.1.x.displayDescription), \(columns.2.x.displayDescription); \(columns.0.y.displayDescription), \(columns.1.y.displayDescription), \(columns.2.y.displayDescription); \(columns.0.z.displayDescription), \(columns.1.z.displayDescription), \(columns.2.z.displayDescription)]"
+    }
+
+    /// A description that constructs the same matrix as Swift code.
+    public var debugDescription: String {
+        "Matrix3x3(columns: (\(columns.0.debugDescription), \(columns.1.debugDescription), \(columns.2.debugDescription)))"
     }
 }
 
@@ -581,8 +593,14 @@ extension Matrix4x4: Codable {
     }
 }
 
-extension Matrix4x4: CustomStringConvertible {
+extension Matrix4x4: CustomStringConvertible, CustomDebugStringConvertible {
+    /// A user-presentable description in row-major order, e.g. `[1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1]`.
     public var description: String {
-        "Matrix4x4(columns: (\(columns.0), \(columns.1), \(columns.2), \(columns.3)))"
+        "[\(columns.0.x.displayDescription), \(columns.1.x.displayDescription), \(columns.2.x.displayDescription), \(columns.3.x.displayDescription); \(columns.0.y.displayDescription), \(columns.1.y.displayDescription), \(columns.2.y.displayDescription), \(columns.3.y.displayDescription); \(columns.0.z.displayDescription), \(columns.1.z.displayDescription), \(columns.2.z.displayDescription), \(columns.3.z.displayDescription); \(columns.0.w.displayDescription), \(columns.1.w.displayDescription), \(columns.2.w.displayDescription), \(columns.3.w.displayDescription)]"
+    }
+
+    /// A description that constructs the same matrix as Swift code.
+    public var debugDescription: String {
+        "Matrix4x4(columns: (\(columns.0.debugDescription), \(columns.1.debugDescription), \(columns.2.debugDescription), \(columns.3.debugDescription)))"
     }
 }
