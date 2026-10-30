@@ -23,6 +23,21 @@ import Testing
         #expect(AffineTransform2D.identity * Vector2D(1, 2) == Vector2D(1, 2))
     }
 
+    @Test func scaleRotationAndTranslationInits() {
+        #expect(AffineTransform2D(scale: Size2D(2, 3)) * Point2D(1, 1) == Point2D(2, 3))
+        #expect(isApproximatelyEqual(AffineTransform2D(rotation: .quarterTurn) * Point2D(1, 0), Point2D(0, 1)))
+        #expect(AffineTransform2D(translation: Vector2D(2, 3)) == translation)
+    }
+
+    @Test func combinedInit() {
+        let transform = AffineTransform2D(scale: Size2D(2, 3), rotation: .quarterTurn, translation: Vector2D(4, 5))
+        let composed = AffineTransform2D(translation: Vector2D(4, 5))
+            * AffineTransform2D(rotation: .quarterTurn)
+            * AffineTransform2D(scale: Size2D(2, 3))
+        #expect(transform == composed)
+        #expect(isApproximatelyEqual(transform * Point2D(1, 1), Point2D(1, 7)))
+    }
+
     @Test func composition() {
         let scaleAfterTranslation = scale * translation
         let translationAfterScale = translation * scale

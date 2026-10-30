@@ -22,6 +22,37 @@ public struct AffineTransform2D: Hashable, Sendable {
 }
 
 extension AffineTransform2D {
+    /// Creates a transform that scales about the origin.
+    public init(scale: Size2D) {
+        self.init(linearTransform: Matrix2x2(diagonal: Vector2D(rawValue: scale.rawValue)), translation: .zero)
+    }
+
+    /// Creates a transform that rotates about the origin.
+    ///
+    /// Positive angles rotate from +x towards +y, which is counterclockwise when y points up
+    /// and clockwise in y-down screen space.
+    public init(rotation: Angle) {
+        let cosine = cos(rotation)
+        let sine = sin(rotation)
+        self.init(linearTransform: Matrix2x2(Vector2D(cosine, sine), Vector2D(-sine, cosine)), translation: .zero)
+    }
+
+    /// Creates a transform that translates.
+    public init(translation: Vector2D) {
+        self.init(linearTransform: .identity, translation: translation)
+    }
+
+    /// Creates a transform that scales, then rotates, then translates.
+    public init(scale: Size2D, rotation: Angle, translation: Vector2D) {
+        let cosine = cos(rotation)
+        let sine = sin(rotation)
+        self.init(
+            linearTransform: Matrix2x2(Vector2D(cosine, sine) * scale.width, Vector2D(-sine, cosine) * scale.height),
+            translation: translation)
+    }
+}
+
+extension AffineTransform2D {
     /// The transform that leaves points and vectors unchanged.
     public static let identity = AffineTransform2D(linearTransform: .identity, translation: .zero)
 

@@ -3,11 +3,6 @@ import Foundation
 import Testing
 @testable import Creative
 
-private func isApproximatelyEqual<V: SIMDRepresentable>(_ a: V, _ b: V, tolerance: Float = 1e-6) -> Bool
-where V.RawValue.Scalar == Float {
-    let difference = a.rawValue - b.rawValue
-    return (difference * difference).sum() <= tolerance * tolerance
-}
 
 @Suite struct Vector2DTests {
     let a = Vector2D(1, 2)

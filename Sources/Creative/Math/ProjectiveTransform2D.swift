@@ -30,6 +30,31 @@ public struct ProjectiveTransform2D: RawRepresentable, Hashable, Sendable {
 }
 
 extension ProjectiveTransform2D {
+    /// Creates a transform that scales about the origin.
+    public init(scale: Size2D) {
+        self.init(AffineTransform2D(scale: scale))
+    }
+
+    /// Creates a transform that rotates about the origin.
+    ///
+    /// Positive angles rotate from +x towards +y, which is counterclockwise when y points up
+    /// and clockwise in y-down screen space.
+    public init(rotation: Angle) {
+        self.init(AffineTransform2D(rotation: rotation))
+    }
+
+    /// Creates a transform that translates.
+    public init(translation: Vector2D) {
+        self.init(AffineTransform2D(translation: translation))
+    }
+
+    /// Creates a transform that scales, then rotates, then translates.
+    public init(scale: Size2D, rotation: Angle, translation: Vector2D) {
+        self.init(AffineTransform2D(scale: scale, rotation: rotation, translation: translation))
+    }
+}
+
+extension ProjectiveTransform2D {
     /// The transform that leaves points unchanged.
     public static let identity = ProjectiveTransform2D(rawValue: .identity)
 

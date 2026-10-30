@@ -17,6 +17,15 @@ import Testing
         #expect(transform.rawValue == matrix)
     }
 
+    @Test func scaleRotationAndTranslationInits() {
+        #expect(ProjectiveTransform2D(scale: Size2D(2, 3)) == ProjectiveTransform2D(AffineTransform2D(scale: Size2D(2, 3))))
+        #expect(ProjectiveTransform2D(rotation: .quarterTurn) == ProjectiveTransform2D(AffineTransform2D(rotation: .quarterTurn)))
+        #expect(ProjectiveTransform2D(translation: Vector2D(2, 3)) == translation)
+        #expect(
+            ProjectiveTransform2D(scale: Size2D(2, 3), rotation: .quarterTurn, translation: Vector2D(4, 5))
+                == ProjectiveTransform2D(AffineTransform2D(scale: Size2D(2, 3), rotation: .quarterTurn, translation: Vector2D(4, 5))))
+    }
+
     @Test func identity() {
         #expect(ProjectiveTransform2D.identity.rawValue == .identity)
         #expect(ProjectiveTransform2D.identity * Point2D(1, 2) == Point2D(1, 2))    }
