@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-creative}",
+            "name": "Debug WindowDemo",
+            "target": "WindowDemo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug WindowDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-creative}",
+            "name": "Release WindowDemo",
+            "target": "WindowDemo",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release WindowDemo"
+        }
+    ]
+}
