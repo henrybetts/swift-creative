@@ -30,8 +30,10 @@ public enum App {
         defer { glfwTerminate() }
 
         setup()
+        destroyClosedWindows()
         while !windows.isEmpty {
             glfwWaitEvents()
+            destroyClosedWindows()
         }
     }
 
@@ -46,7 +48,10 @@ public enum App {
         windows.append(window)
     }
 
-    static func removeWindow(_ window: Window) {
-        windows.removeAll { $0 === window }
+    /// Destroys and removes windows that have been asked to close.
+    private static func destroyClosedWindows() {
+        while let index = windows.firstIndex(where: \.shouldClose) {
+            windows.remove(at: index).destroy()
+        }
     }
 }
