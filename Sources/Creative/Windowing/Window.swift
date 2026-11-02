@@ -13,6 +13,16 @@ public final class Window {
     /// Occurs when the mouse cursor moves, with the new `mousePosition`.
     public let onMouseMove = Event<Point2D>()
 
+    /// Occurs when a mouse button is pressed.
+    ///
+    /// Add a handler for a single button with `onMouseDown(.left) { event in }`.
+    public let onMouseDown = Event<MouseEvent>()
+
+    /// Occurs when a mouse button is released.
+    ///
+    /// Add a handler for a single button with `onMouseUp(.left) { event in }`.
+    public let onMouseUp = Event<MouseEvent>()
+
     /// Occurs when the window is resized, with the new `size`.
     public let onResize = Event<Size2D>()
 
@@ -46,6 +56,9 @@ public final class Window {
         glfwSetWindowUserPointer(handle, Unmanaged.passUnretained(self).toOpaque())
         glfwSetCursorPosCallback(handle) { handle, x, y in
             MainActor.assumeIsolated { Window.from(handle)?.onMouseMove.trigger(Point2D(Float(x), Float(y))) }
+        }
+        glfwSetMouseButtonCallback(handle) { handle, button, action, mods in
+            MainActor.assumeIsolated { Window.from(handle)?.mouseButtonChanged(button, action: action, mods: mods) }
         }
         glfwSetWindowSizeCallback(handle) { handle, width, height in
             MainActor.assumeIsolated { Window.from(handle)?.onResize.trigger(Size2D(Float(width), Float(height))) }
@@ -170,11 +183,22 @@ public final class Window {
 
     private func removeAllHandlers() {
         onMouseMove.removeAll()
+        onMouseDown.removeAll()
+        onMouseUp.removeAll()
         onResize.removeAll()
         onFramebufferResize.removeAll()
         onMove.removeAll()
         onContentScaleChange.removeAll()
         onClose.removeAll()
+    }
+
+    /// Triggers `onMouseDown` or `onMouseUp` for a GLFW mouse button callback.
+    private func mouseButtonChanged(_ button: Int32, action: Int32, mods: Int32) {
+        let event = MouseEvent(glfwButton: button, action: action, mods: mods, position: mousePosition)
+        switch event.action {
+        case .down: onMouseDown.trigger(event)
+        case .up: onMouseUp.trigger(event)
+        }
     }
 
     /// Returns the window for a GLFW window handle.
