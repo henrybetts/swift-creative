@@ -29,11 +29,17 @@ public enum App {
         }
         defer { glfwTerminate() }
 
-        setup()
-        destroyClosedWindows()
-        while !windows.isEmpty {
-            glfwWaitEvents()
-            destroyClosedWindows()
+        do {
+            try Device.withDefault {
+                setup()
+                destroyClosedWindows()
+                while !windows.isEmpty {
+                    glfwWaitEvents()
+                    destroyClosedWindows()
+                }
+            }
+        } catch {
+            fatalError("\(error)")
         }
     }
 

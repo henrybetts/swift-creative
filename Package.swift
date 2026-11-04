@@ -11,6 +11,7 @@ let package = Package(
             targets: ["Creative"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/henrybetts/swift-webgpu.git", branch: "generate-webgpu-official"),
         .package(url: "https://github.com/apple/swift-numerics", from: "1.0.0"),
     ],
     targets: [
@@ -21,7 +22,11 @@ let package = Package(
                 .brew(["glfw"])]),
         .target(
             name: "Creative",
-            dependencies: ["CGLFW", .product(name: "RealModule", package: "swift-numerics")],
+            dependencies: [
+                "CGLFW",
+                .product(name: "WebGPU", package: "swift-webgpu"),
+                .product(name: "RealModule", package: "swift-numerics")
+            ],
             exclude: ["Math/Vector.swift.gyb", "Math/Point.swift.gyb", "Math/Size.swift.gyb", "Math/Matrix.swift.gyb"]),
         .executableTarget(
             name: "WindowDemo",

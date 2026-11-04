@@ -1,6 +1,15 @@
 {
-  "originHash" : "9e305b175889ff9803c50d63c4804b547b78f04d4e9192e9fef70273f627a61a",
+  "originHash" : "fa6c44fa3532fff26a3086d23c4a01e63dacaeac355c98b94555d266b0d7c40d",
   "pins" : [
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "6a52f3251125d74daf04fcbd5e6f08a75d074382",
+        "version" : "1.8.2"
+      }
+    },
     {
       "identity" : "swift-numerics",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,15 @@
       "state" : {
         "revision" : "0c0290ff6b24942dadb83a929ffaaa1481df04a2",
         "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "swift-webgpu",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/henrybetts/swift-webgpu.git",
+      "state" : {
+        "branch" : "generate-webgpu-official",
+        "revision" : "5ad7a42ccaa06765d2c9f77688caa6b6a7896953"
       }
     }
   ],

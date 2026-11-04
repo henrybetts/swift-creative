@@ -6,9 +6,9 @@ Built on top of WebGPU, a core aim is to be cross-platform on desktop, with supp
 ## Roadmap
 
 ### First steps
-- [ ] Basic 2D math
-- [ ] Color type
-- [ ] Windowing system and basic input
+- [x] Basic 2D math
+- [x] Color type
+- [x] Windowing system and basic input
 - [ ] 2D scene graph
 - [ ] Basic 2D rendering
 - [ ] 2D geometry
