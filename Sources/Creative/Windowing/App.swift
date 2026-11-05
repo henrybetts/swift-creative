@@ -1,5 +1,9 @@
 import CGLFW
 
+#if canImport(ObjectiveC)
+import ObjectiveC
+#endif
+
 /// The process-wide application runtime, which owns the windowing system and keeps open windows alive.
 @MainActor
 public enum App {
@@ -12,7 +16,8 @@ public enum App {
     /// The most recent error reported by GLFW.
     private(set) static var lastGLFWError = "unknown error"
 
-    /// Initializes the windowing system, calls `setup`, then processes events until all windows are closed.
+    /// Initializes the windowing system, calls `setup`, then processes events and draws each open window once per
+    /// frame until all windows are closed.
     ///
     /// Open windows in `setup`. If none are open when it returns, this method returns immediately.
     public static func run(_ setup: () -> Void) {
@@ -34,8 +39,13 @@ public enum App {
                 setup()
                 destroyClosedWindows()
                 while !windows.isEmpty {
-                    glfwWaitEvents()
-                    destroyClosedWindows()
+                    withAutoreleasePool {
+                        glfwPollEvents()
+                        destroyClosedWindows()
+                        for window in windows {
+                            window.draw()
+                        }
+                    }
                 }
             }
         } catch {
@@ -60,4 +70,15 @@ public enum App {
             windows.remove(at: index).destroy()
         }
     }
+}
+
+/// Calls `body` within an autorelease pool on platforms that have one, so that per-frame objects such as Metal
+/// drawables are released promptly.
+@MainActor
+private func withAutoreleasePool(_ body: () -> Void) {
+    #if canImport(ObjectiveC)
+    autoreleasepool(invoking: body)
+    #else
+    body()
+    #endif
 }

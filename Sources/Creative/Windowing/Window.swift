@@ -1,4 +1,11 @@
 import CGLFW
+import WebGPU
+
+#if os(macOS)
+import AppKit
+#elseif os(Windows)
+import WinSDK
+#endif
 
 /// A native window.
 ///
@@ -9,6 +16,15 @@ import CGLFW
 public final class Window {
     private var handle: OpaquePointer?
     private var storedTitle: String
+    private var surface: Surface?
+    private let surfaceFormat: TextureFormat
+    private var configuredSurfaceSize = Size2D.zero
+
+    /// The color the window's content is cleared to at the start of each frame.
+    public var backgroundColor = Color.black
+
+    /// Occurs once per frame, before the window's content is rendered.
+    public let onDraw = Event<Void>()
 
     /// Occurs when the mouse cursor moves, with the new `mousePosition`.
     public let onMouseMove = Event<Point2D>()
@@ -52,6 +68,15 @@ public final class Window {
         }
         self.handle = handle
         storedTitle = title
+
+        let device = Device.default
+        let surface = device.instance.createSurface(descriptor: .init(glfwWindow: handle))
+        let formats = surface.getCapabilities(adapter: device.adapter).formats
+        guard let format = TextureFormat.preferredSurfaceFormat(from: formats) else {
+            fatalError("The window's surface doesn't support any texture formats")
+        }
+        self.surface = surface
+        surfaceFormat = format
 
         glfwSetWindowUserPointer(handle, Unmanaged.passUnretained(self).toOpaque())
         glfwSetCursorPosCallback(handle) { handle, x, y in
@@ -170,18 +195,68 @@ public final class Window {
         return glfwWindowShouldClose(handle) == GLFW_TRUE
     }
 
-    /// Triggers `onClose`, removes all handlers, and destroys the native window.
+    /// Triggers `onDraw`, then renders and presents a frame.
+    func draw() {
+        guard let surface else { return }
+
+        let size = framebufferSize
+        guard size.width > 0, size.height > 0 else { return }
+        if size != configuredSurfaceSize {
+            configureSurface(size: size)
+        }
+
+        let surfaceTexture: SurfaceTexture
+        do {
+            surfaceTexture = try surface.getCurrentTexture()
+        } catch {
+            // The surface is outdated or lost, so reconfigure it next frame.
+            configuredSurfaceSize = .zero
+            return
+        }
+
+        onDraw.trigger()
+
+        let device = Device.default.device
+        let encoder = device.createCommandEncoder()
+        let renderPass = encoder.beginRenderPass(descriptor: RenderPassDescriptor(colorAttachments: [
+            RenderPassColorAttachment(
+                view: surfaceTexture.texture.createView(),
+                loadOp: .clear,
+                storeOp: .store,
+                clearValue: WebGPU.Color(backgroundColor))
+        ]))
+        renderPass.end()
+        device.queue.submit(commands: [encoder.finish()])
+        _ = surface.present()
+    }
+
+    /// Triggers `onClose`, removes all handlers, and destroys the surface and native window.
     ///
     /// Must not be called from within a GLFW callback.
     func destroy() {
         guard let handle else { return }
         onClose.trigger()
         removeAllHandlers()
+        surface?.unconfigure()
+        surface = nil
         glfwDestroyWindow(handle)
         self.handle = nil
     }
 
+    /// Configures the surface to present frames of `size` pixels.
+    private func configureSurface(size: Size2D) {
+        guard let surface else { return }
+        surface.configure(config: SurfaceConfiguration(
+            device: Device.default.device,
+            format: surfaceFormat,
+            width: UInt32(size.width),
+            height: UInt32(size.height),
+            presentMode: .fifo))
+        configuredSurfaceSize = size
+    }
+
     private func removeAllHandlers() {
+        onDraw.removeAll()
         onMouseMove.removeAll()
         onMouseDown.removeAll()
         onMouseUp.removeAll()
@@ -204,5 +279,28 @@ public final class Window {
     /// Returns the window for a GLFW window handle.
     private static func from(_ handle: OpaquePointer?) -> Window? {
         glfwGetWindowUserPointer(handle).map { Unmanaged<Window>.fromOpaque($0).takeUnretainedValue() }
+    }
+}
+
+private extension SurfaceDescriptor {
+    /// Returns a descriptor for creating a surface that presents to a GLFW window.
+    @MainActor
+    init(glfwWindow handle: OpaquePointer) {
+        #if os(macOS)
+        let view = (glfwGetCocoaWindow(handle) as! NSWindow).contentView!
+        let layer = CAMetalLayer()
+        view.layer = layer
+        view.wantsLayer = true
+        self.init(nextInChain: SurfaceSourceMetalLayer(
+            layer: Unmanaged.passUnretained(layer).toOpaque()))
+        #elseif os(Linux)
+        self.init(nextInChain: SurfaceSourceXlibWindow(
+            display: UnsafeMutableRawPointer(glfwGetX11Display()),
+            window: UInt64(glfwGetX11Window(handle))))
+        #elseif os(Windows)
+        self.init(nextInChain: SurfaceSourceWindowsHwnd(
+            hinstance: GetModuleHandleW(nil),
+            hwnd: glfwGetWin32Window(handle)))
+        #endif
     }
 }

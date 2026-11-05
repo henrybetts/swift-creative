@@ -34,7 +34,11 @@ let package = Package(
             path: "Examples/WindowDemo"),
         .testTarget(
             name: "CreativeTests",
-            dependencies: ["Creative", .product(name: "RealModule", package: "swift-numerics")],
+            dependencies: [
+                "Creative",
+                .product(name: "WebGPU", package: "swift-webgpu"),
+                .product(name: "RealModule", package: "swift-numerics"),
+            ],
             exclude: ["VectorTests.swift.gyb", "PointTests.swift.gyb", "SizeTests.swift.gyb", "MatrixTests.swift.gyb"]
         ),
     ]
