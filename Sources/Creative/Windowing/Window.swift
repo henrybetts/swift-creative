@@ -20,8 +20,8 @@ public final class Window {
     private let surfaceFormat: TextureFormat
     private var configuredSurfaceSize = Size2D.zero
 
-    /// The color the window's content is cleared to at the start of each frame.
-    public var backgroundColor = Color.black
+    /// The scene drawn to the window each frame.
+    public var scene = Scene2D()
 
     /// Occurs once per frame, before the window's content is rendered.
     public let onDraw = Event<Void>()
@@ -195,7 +195,7 @@ public final class Window {
         return glfwWindowShouldClose(handle) == GLFW_TRUE
     }
 
-    /// Triggers `onDraw`, then renders and presents a frame.
+    /// Triggers `onDraw`, then draws `scene` and presents a frame.
     func draw() {
         guard let surface else { return }
 
@@ -216,17 +216,7 @@ public final class Window {
 
         onDraw.trigger()
 
-        let device = Device.default.device
-        let encoder = device.createCommandEncoder()
-        let renderPass = encoder.beginRenderPass(descriptor: RenderPassDescriptor(colorAttachments: [
-            RenderPassColorAttachment(
-                view: surfaceTexture.texture.createView(),
-                loadOp: .clear,
-                storeOp: .store,
-                clearValue: WebGPU.Color(backgroundColor))
-        ]))
-        renderPass.end()
-        device.queue.submit(commands: [encoder.finish()])
+        scene.draw(to: surfaceTexture.texture.createView())
         _ = surface.present()
     }
 
