@@ -19,4 +19,12 @@ import WebGPU
         #expect(TextureFormat.preferredSurfaceFormat(from: [.rgba16Float, .bgra8Unorm]) == .rgba16Float)
         #expect(TextureFormat.preferredSurfaceFormat(from: []) == nil)
     }
+
+    @Test func primitiveTopologyFromMeshTopology() {
+        #expect(PrimitiveTopology(MeshTopology.points) == .pointList)
+        #expect(PrimitiveTopology(MeshTopology.lines) == .lineList)
+        #expect(PrimitiveTopology(MeshTopology.lineStrip) == .lineStrip)
+        #expect(PrimitiveTopology(MeshTopology.triangles) == .triangleList)
+        #expect(PrimitiveTopology(MeshTopology.triangleStrip) == .triangleStrip)
+    }
 }
