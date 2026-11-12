@@ -37,3 +37,10 @@ public struct Mesh2D: Hashable, Codable, Sendable {
         positions.count
     }
 }
+
+extension Mesh2D: Mesh2DConvertible {
+    /// The mesh itself.
+    public var mesh: Mesh2D {
+        self
+    }
+}

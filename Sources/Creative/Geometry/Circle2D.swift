@@ -25,3 +25,18 @@ extension Circle2D: CustomStringConvertible, CustomDebugStringConvertible {
         "Circle2D(center: \(center.debugDescription), radius: \(radius))"
     }
 }
+
+extension Circle2D: Mesh2DConvertible {
+    /// A mesh approximating this circle with 64 segments.
+    public var mesh: Mesh2D {
+        mesh(segmentCount: 64)
+    }
+
+    /// A mesh approximating this circle with a regular polygon of `segmentCount` sides, which is expected to be
+    /// at least 3.
+    ///
+    /// The polygon's vertices lie on the circle.
+    public func mesh(segmentCount: Int) -> Mesh2D {
+        RegularPolygon2D(circumcircle: self, sideCount: segmentCount).mesh
+    }
+}

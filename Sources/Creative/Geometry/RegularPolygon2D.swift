@@ -27,3 +27,16 @@ extension RegularPolygon2D: CustomStringConvertible, CustomDebugStringConvertibl
         "RegularPolygon2D(circumcircle: \(circumcircle.debugDescription), sideCount: \(sideCount))"
     }
 }
+
+extension RegularPolygon2D: Mesh2DConvertible {
+    /// A mesh of this polygon as a fan of triangles from the first vertex.
+    public var mesh: Mesh2D {
+        precondition(sideCount >= 3, "A regular polygon needs at least 3 sides, not \(sideCount)")
+        let positions = (0..<sideCount).map { i in
+            let angle = Angle.fullTurn * Float(i) / Float(sideCount)
+            return circumcircle.center + Vector2D(cos(angle), sin(angle)) * circumcircle.radius
+        }
+        let indices = (1..<UInt32(sideCount - 1)).flatMap { i -> [UInt32] in [0, i, i + 1] }
+        return Mesh2D(positions: positions, indices: indices)
+    }
+}

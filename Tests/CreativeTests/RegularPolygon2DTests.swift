@@ -29,4 +29,18 @@ import Testing
         #expect(polygon.debugDescription
             == "RegularPolygon2D(circumcircle: Circle2D(center: Point2D(x: 1.0, y: 2.0), radius: 3.0), sideCount: 6)")
     }
+
+    @Test func mesh() {
+        let square = RegularPolygon2D(circumcircle: Circle2D(center: Point2D(1, 2), radius: 3), sideCount: 4)
+        let mesh = square.mesh
+        let expected = [Point2D(4, 2), Point2D(1, 5), Point2D(-2, 2), Point2D(1, -1)]
+        #expect(zip(mesh.positions, expected).allSatisfy { isApproximatelyEqual($0, $1) })
+        #expect(mesh.positions.count == 4)
+        #expect(mesh.indices == [0, 1, 2, 0, 2, 3])
+        #expect(mesh.topology == .triangles)
+    }
+
+    @Test func triangleMesh() {
+        #expect(RegularPolygon2D(circumcircle: Circle2D(center: .origin, radius: 1), sideCount: 3).mesh.indices == [0, 1, 2])
+    }
 }

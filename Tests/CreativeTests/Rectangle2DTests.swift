@@ -57,4 +57,12 @@ import Testing
     @Test func debugDescription() {
         #expect(rectangle.debugDescription == "Rectangle2D(x: 1.0, y: 2.0, width: 3.0, height: 4.0)")
     }
+
+    @Test func mesh() {
+        let expected = Mesh2D(
+            positions: [Point2D(1, 2), Point2D(4, 2), Point2D(4, 6), Point2D(1, 6)],
+            indices: [0, 1, 2, 0, 2, 3])
+        #expect(rectangle.mesh == expected)
+        #expect(flipped.mesh == expected)
+    }
 }

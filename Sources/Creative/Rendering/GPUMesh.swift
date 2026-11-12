@@ -23,8 +23,9 @@ public final class GPUMesh {
     /// How vertices are assembled into primitives.
     let topology: PrimitiveTopology
 
-    /// Creates a GPU mesh from a 2D mesh, using the default device.
-    public init(_ mesh: Mesh2D) {
+    /// Creates a GPU mesh from a 2D mesh or shape, using the default device.
+    public init(_ shape: some Mesh2DConvertible) {
+        let mesh = shape.mesh
         precondition(
             mesh.colors.map { $0.count == mesh.vertexCount } ?? true,
             "Mesh has \(mesh.colors?.count ?? 0) colors but \(mesh.vertexCount) positions")

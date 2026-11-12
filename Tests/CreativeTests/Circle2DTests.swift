@@ -28,4 +28,9 @@ import Testing
     @Test func debugDescription() {
         #expect(circle.debugDescription == "Circle2D(center: Point2D(x: 1.0, y: 2.0), radius: 3.0)")
     }
+
+    @Test func mesh() {
+        #expect(circle.mesh == RegularPolygon2D(circumcircle: circle, sideCount: 64).mesh)
+        #expect(circle.mesh(segmentCount: 8) == RegularPolygon2D(circumcircle: circle, sideCount: 8).mesh)
+    }
 }

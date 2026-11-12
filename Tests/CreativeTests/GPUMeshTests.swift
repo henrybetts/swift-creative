@@ -42,4 +42,13 @@ import WebGPU
             #expect(mesh.count == 0)
         }
     }
+
+    @Test func shape() throws {
+        try Device.withDefault {
+            let mesh = GPUMesh(Rectangle2D(x: 0, y: 0, width: 1, height: 1))
+            #expect(mesh.positionBuffer.size == 4 * 8)
+            #expect(mesh.indexBuffer?.size == 6 * 4)
+            #expect(mesh.count == 6)
+        }
+    }
 }

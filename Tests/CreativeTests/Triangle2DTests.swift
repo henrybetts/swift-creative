@@ -33,4 +33,13 @@ import Testing
     @Test func debugDescription() {
         #expect(triangle.debugDescription == "Triangle2D(Point2D(x: 0.0, y: 0.0), Point2D(x: 1.0, y: 0.0), Point2D(x: 0.0, y: 1.0))")
     }
+
+    @Test func mesh() {
+        #expect(triangle.mesh == Mesh2D(positions: [Point2D(0, 0), Point2D(1, 0), Point2D(0, 1)]))
+    }
+
+    @Test func clockwiseMesh() {
+        let clockwise = Triangle2D(Point2D(0, 0), Point2D(0, 1), Point2D(1, 0))
+        #expect(clockwise.mesh.positions == [Point2D(0, 0), Point2D(1, 0), Point2D(0, 1)])
+    }
 }

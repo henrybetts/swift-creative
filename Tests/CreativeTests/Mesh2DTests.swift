@@ -31,4 +31,8 @@ import Testing
         #expect(try JSONDecoder().decode(Mesh2D.self, from: data) == mesh)
         #expect(try JSONDecoder().decode(Mesh2D.self, from: encoder.encode(quad)) == quad)
     }
+
+    @Test func meshIsSelf() {
+        #expect(quad.mesh == quad)
+    }
 }

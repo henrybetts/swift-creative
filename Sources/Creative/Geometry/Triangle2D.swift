@@ -56,3 +56,14 @@ extension Triangle2D: CustomStringConvertible, CustomDebugStringConvertible {
         "Triangle2D(\(vertices.0.debugDescription), \(vertices.1.debugDescription), \(vertices.2.debugDescription))"
     }
 }
+
+extension Triangle2D: Mesh2DConvertible {
+    /// A mesh of this triangle, with its vertices reordered if needed to wind counter-clockwise.
+    public var mesh: Mesh2D {
+        let (a, b, c) = vertices
+        let ab = b - a
+        let ac = c - a
+        let isClockwise = ab.x * ac.y - ab.y * ac.x < 0
+        return Mesh2D(positions: isClockwise ? [a, c, b] : [a, b, c])
+    }
+}

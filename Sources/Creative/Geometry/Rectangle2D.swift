@@ -63,3 +63,12 @@ extension Rectangle2D: CustomStringConvertible, CustomDebugStringConvertible {
         "Rectangle2D(x: \(origin.x), y: \(origin.y), width: \(size.width), height: \(size.height))"
     }
 }
+
+extension Rectangle2D: Mesh2DConvertible {
+    /// A mesh of this rectangle as two triangles, starting from the minimum corner.
+    public var mesh: Mesh2D {
+        Mesh2D(
+            positions: [Point2D(minX, minY), Point2D(maxX, minY), Point2D(maxX, maxY), Point2D(minX, maxY)],
+            indices: [0, 1, 2, 0, 2, 3])
+    }
+}
